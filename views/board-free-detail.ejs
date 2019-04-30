@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Main Page</title>
+
+
+	<link rel='stylesheet' href='/stylesheets/style.css' />
+  <!-- jQuery -->
+    <script src="//code.jquery.com/jquery.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+  <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  <!-- Bootstrap JavaScript -->
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+  <!-- Bootstrap CSS -->
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+  
+  <!-- ======================== NavBar ========================== -->
+  <div class="navbar-wrapper">
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>         
+                <a class="navbar-brand" href="#">프로젝트</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+              <ul class="nav navbar-nav">
+                <li><a href="/">홈</a></li>     
+                <li><a href="#about">About</a></li>
+                <li class="dropdown active">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">게시판 <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="/board-free">자유 게시판</a></li>
+                    <li><a href="#">거래 게시판<a></li>
+                    <li><a href="#">내 게시물</a></li>            
+                  </ul>
+                </li>                  
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">사용자 계정 <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="/profile">프로필 편집</a></li>
+                    <li><a href="/logout">로그아웃</a></li>
+                  </ul>
+                </li>                 
+              </ul>           
+                <form>                          
+                  <% if(locals.profileImage){ %>                        
+                    <img  class="img-circle navbar-right" width="45" height="45" alt="..." src= <%= profileImage %> <!--서버 저장된 이미지-->                                                    
+                  <% }else{ %>
+                    <img  class="img-circle navbar-right" width="45" height="45" alt="..." src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" %> <!--빈 화면-->
+                  <% } %>                  
+                  <% if(locals.userId){ %>
+                    <p class="white-text navbar-right"><%= userId %></p>     
+                  <% } %>
+                  -->
+                </form>                                                                                            
+            </div>  
+          </div>
+        </nav>
+    </div>
+    <!-- ======================== NavBar ========================== -->
+  
+    <!-- Detail Board Content -->
+    
+    <div class="row margin-top">
+            <div class="container">
+              <div class="col-md-2"></div>       
+              <div class="col-md-14">
+                  <h2 class="text-center margin-top well">자유 게시판</h2><p></p>       
+                  <form role="form" method="POST" action="/board-free/write/commit" enctype="application/x-www-form-urlencoded" >   
+                      <div class="table table-responsive shadow-textarea margin-top">
+                      <table class="table table-striped">
+                            
+                            <tr>
+                                <td>작성자</td>  
+                                <td class="well well-sm">                      
+                                    <% if(locals.userProfile_w){ %>                        
+                                        <img  class="img-circle margin-profile-right" width="50" height="50" alt="..." src= <%= userProfile_w %>                                                     
+                                    <% } %>   
+                                    <span name="userId_w" value="<%= userId %>" readonly><%=locals.userId_w %></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>제목</td>
+                                <td class="well well-sm"><textarea type="text"  class="form-control" name="title" readonly><%=locals.board_title %></textarea></td>
+                            </tr>
+                            
+                            <tr>
+                                <td>글내용</td>
+                                <td class="well well-sm"><textarea rows="20" cols="100" name="content" class="form-control z-depth-1" readonly><%=locals.content %></textarea></td>
+                            </tr>
+  
+                        <tr>  
+                            <tr>
+                                <td>댓글쓰기</td>
+                                <td class="well well-sm"><textarea rows="5" cols="100" name="content" class="form-control z-depth-1"></textarea></td>
+                            </tr>
+                            <td colspan="2"  class="text-center">        
+                                <input type="hidden" name="num"  value="">
+                                <input type="hidden" name="ref"  value="">
+                                <input type="hidden" name="ref_step"  value="">
+                                <input type="hidden" name="ref_level"  value="">                                  
+                                <input type="submit" value="완료" class="btn btn-success">                      
+                                <input type="reset" value="취소" class="btn btn-danger" onclick="location.href='/board-free'">
+                                <input type="button" value="목록으로" class="btn btn-primary" onclick="location.href='/board-free'">
+                            </td>
+                        </tr>
+                       
+                       </table>                    
+                      </div>
+                  </form>   
+              </div>
+          </div>
+        </div>
+
+    <!-- Detail Board Content -->
+    
+  
+    <!-- FOOTER -->
+    <footer>
+        <p class="pull-right"><a href="#">Back to top</a></p>
+        <p>&copy; 2019 Company, June. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
+    </footer>
+  
+    </div><!-- /.container -->
+  
+  
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>     
+      
+     
+</body>
+
+</html>
