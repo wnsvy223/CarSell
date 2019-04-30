@@ -88,7 +88,6 @@ router.get('/detail?:data_board_num', function(req, res, next){
                 if(err){
                     console.log('quey error'+err);
                 }else{                   
-                    console.log("본문보기" + JSON.stringify(rows));
                     var renderParam = {
                         email : req.session.email, 
                         profileImage : req.session.userProfile, 
@@ -101,7 +100,7 @@ router.get('/detail?:data_board_num', function(req, res, next){
                         rows: rows // 본문 조회값
                     };
                     res.render('board-free-detail', renderParam);
-                    connection.release();
+                    connection.release();                  
                 }
             });
         }
