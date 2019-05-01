@@ -10,7 +10,7 @@ router.get('/', function(req, res, next) {
         if(err){
             console.log('connection pool error'+err);
         }else{
-            var query = 'select board.*, users.userProfile from board inner join users on users.userId=board.userId_w order by board_num asc';
+            var query = 'select board.*, users.userProfile from board inner join users on users.userId=board.userId_w order by board_num desc';
             // 게시판 테이블 모든 데이터 + 유저테이블의 글 작성자 프로필사진 inner join 조회및 내림차순 정렬
             connection.query(query,function (err, rows, fields){
                 if(err){
@@ -45,7 +45,7 @@ router.get('/page/:idx', function(req, res, next){
             connection.query(queryAll, function(err, rows, fields){
                 var totalList = rows.length;        
                 var currentPage = parseInt(req.params.idx)  * 10;        
-                var query = 'select board.*, users.userProfile from board inner join users on users.userId=board.userId_w order by board_num asc limit ?,?';
+                var query = 'select board.*, users.userProfile from board inner join users on users.userId=board.userId_w order by board_num desc limit ?,?';
                 connection.query(query, [currentPage, 10], function (err, rows, fields){
                     if(err){
                         console.log('query error'+err);
