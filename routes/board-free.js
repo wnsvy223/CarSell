@@ -23,6 +23,8 @@ router.get('/', function(req, res, next) {
                         userId : req.session.userId, 
                         rows : rows, 
                         moment : moment,
+                        totalList : rows.length,
+                        list : 10
                     }
                     res.render('board-free', renderParam);
                     connection.release();
@@ -39,23 +41,43 @@ router.get('/page/:idx', function(req, res, next){
         if(err){
             console.log('connection pool error'+err);
         }else{
-            var currentPage = parseInt(req.params.idx)  * 10;
-            console.log('페이징' + currentPage);
-            var query = 'select board.*, users.userProfile from board inner join users on users.userId=board.userId_w order by board_num asc limit ?,?';
-            connection.query(query, [currentPage, 10], function (err, rows, fields){
-                if(err){
-                    console.log('query error'+err);
-                }else{
-                    var renderParam ={
-                        email : req.session.email, 
-                        profileImage : req.session.userProfile, 
-                        userId : req.session.userId, 
-                        rows : rows, 
-                        moment : moment,
+            var queryAll = 'select board.*, users.userProfile from board inner join users on users.userId=board.userId_w order by board_num asc';
+            connection.query(queryAll, function(err, rows, fields){
+                var totalList = rows.length;        
+                var currentPage = parseInt(req.params.idx)  * 10;        
+                var query = 'select board.*, users.userProfile from board inner join users on users.userId=board.userId_w order by board_num asc limit ?,?';
+                connection.query(query, [currentPage, 10], function (err, rows, fields){
+                    if(err){
+                        console.log('query error'+err);
+                    }else{
+                        console.log('페이지:' + currentPage + '길이:' + rows.length);
+                        if(rows.length < 10){
+                            var renderParam ={
+                                email : req.session.email, 
+                                profileImage : req.session.userProfile, 
+                                userId : req.session.userId, 
+                                rows : rows, 
+                                moment : moment,
+                                totalList: totalList,
+                                list : rows.length
+                            }
+                            res.render('board-free', renderParam);
+                            connection.release();
+                        }else{
+                            var renderParam ={
+                                email : req.session.email, 
+                                profileImage : req.session.userProfile, 
+                                userId : req.session.userId, 
+                                rows : rows, 
+                                moment : moment,
+                                totalList: totalList,
+                                list : 10
+                            }
+                            res.render('board-free', renderParam);
+                            connection.release();
+                        }
                     }
-                    res.render('board-free', renderParam);
-                    connection.release();
-                }
+                });
             });
         }
     }); 
