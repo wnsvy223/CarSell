@@ -99,7 +99,7 @@
                     </tr>
                 </thead>
                 <tbody> <!-- 게시판 테이블 본문부분-->
-                    <% for(var i=0; i<limitList; i++){ %>
+                    <% for(var i= 0; i<10; i++){ %>
                         <tr>
                             <td class="col-md-1"><%=rows[i].board_num %></td>
                             <td class="col-md-6 text_reduction">
@@ -132,9 +132,9 @@
             </form>
 
             <div class="text-center">
-                <ul class="pagination"> <!--게시판 페이징-->
-                  <% for(var i=0; i<page; i++){ %>
-                    <li><a href="#"><%= i + 1 %></a></li>
+                <ul class="pagination"> <!--게시판 페이징 버튼-->
+                  <% for(var i=0; i<10; i++){ %>
+                    <li><a href="/board-free/page/<%= i %>"><%= i + 1 %></a></li>
                   <% } %>                 
                 </ul>
             </div>

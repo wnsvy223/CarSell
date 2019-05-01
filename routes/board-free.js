@@ -3,16 +3,46 @@ var router = express.Router();
 var mysqlDB = require('../mysqlDB');
 var moment = require('moment');
 
+
 router.get('/', function(req, res, next) {
-    var date_now = moment().format('YYYY-MM-DD HH:mm:ss:SSS');
-    var limitList = 10; // 한 페이지 게시글 숫자
+
     mysqlDB.getConnection(function(err, connection){
         if(err){
             console.log('connection pool error'+err);
         }else{
-            var query = 'select board.*, users.userProfile from board inner join users on users.userId=board.userId_w order by board_num desc';
+            var query = 'select board.*, users.userProfile from board inner join users on users.userId=board.userId_w order by board_num asc';
             // 게시판 테이블 모든 데이터 + 유저테이블의 글 작성자 프로필사진 inner join 조회및 내림차순 정렬
             connection.query(query,function (err, rows, fields){
+                if(err){
+                    console.log('query error'+err);
+                }else{               
+                    console.log('전체게시물 : ' + rows.length);
+                    var renderParam ={
+                        email : req.session.email, 
+                        profileImage : req.session.userProfile, 
+                        userId : req.session.userId, 
+                        rows : rows, 
+                        moment : moment,
+                    }
+                    res.render('board-free', renderParam);
+                    connection.release();
+                }
+            });
+        }
+    });
+}); 
+
+
+router.get('/page/:idx', function(req, res, next){
+  
+    mysqlDB.getConnection(function(err, connection){
+        if(err){
+            console.log('connection pool error'+err);
+        }else{
+            var currentPage = parseInt(req.params.idx)  * 10;
+            console.log('페이징' + currentPage);
+            var query = 'select board.*, users.userProfile from board inner join users on users.userId=board.userId_w order by board_num asc limit ?,?';
+            connection.query(query, [currentPage, 10], function (err, rows, fields){
                 if(err){
                     console.log('query error'+err);
                 }else{
@@ -22,18 +52,14 @@ router.get('/', function(req, res, next) {
                         userId : req.session.userId, 
                         rows : rows, 
                         moment : moment,
-                        limitList : limitList, // 한 페이지 게시글 숫자
-                        totalList : rows.length, // 전체 게시글 숫자
-                        page : rows.length / limitList // 페이지 숫자
                     }
                     res.render('board-free', renderParam);
                     connection.release();
-                    //console.log('조회값'+ JSON.stringify(rows));
                 }
             });
         }
-    });
-}); 
+    }); 
+});
 
 
 router.get('/write', function(req, res, next){  
