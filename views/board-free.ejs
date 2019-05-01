@@ -99,25 +99,25 @@
                     </tr>
                 </thead>
                 <tbody> <!-- 게시판 테이블 본문부분-->
-                    <% for(let data of rows){%>
+                    <% for(var i=0; i<limitList; i++){ %>
                         <tr>
-                            <td class="col-md-1"><%=data.board_num %></td>
+                            <td class="col-md-1"><%=rows[i].board_num %></td>
                             <td class="col-md-6 text_reduction">
                               <span>
-                                <a  href="/board-free/detail?index=<%=data.board_num %>&userProfile_w=<%=data.userProfile %>"><%=data.board_title %></a>
+                                <a  href="/board-free/detail?index=<%=rows[i].board_num %>&userProfile_w=<%=rows[i].userProfile %>"><%=rows[i].board_title %></a>
                                 <!-- JS에서 쿼리스트링으로 추출할수 있도록 Url에 게시물번호와 작성자프로필사진값 같이 전달-->
                               </span>
                             </td>
                             <td class="col-md-2">
-                                <img  class="img-circle margin-left margin-profile-right" width="25" height="25" alt="..." src= <%=data.userProfile %>
-                                <a><%=data.userId_w %></a>
+                                <img  class="img-circle margin-left margin-profile-right" width="25" height="25" alt="..." src= <%=rows[i].userProfile %>
+                                <a><%=rows[i].userId_w %></a>
                             </td>
                             <td class="col-md-2 text-center">
-                              <small><%=moment(data.timeStamp).format('YYYY-MM-DD HH:mm:ss')%></small>
+                              <small><%=moment(rows[i].timeStamp).format('YYYY-MM-DD HH:mm:ss')%></small>
                             </td> 
                             <!--모멘트 객체 넘겨받아서 JS 코드를 이용해 날짜 포멧 변경 GMT => UTC LOCAL -->                                      
                             <td  class="col-md-1 text-center">
-                              <small> <%=data.readCount %></small>
+                              <small> <%=rows[i].readCount %></small>
                             </td>
                         </tr>
                     <% } %>            
@@ -133,11 +133,9 @@
 
             <div class="text-center">
                 <ul class="pagination"> <!--게시판 페이징-->
-                    <li class="active" ><a href="#">1</a></li>
-                    <li><a href="#">2</a></li>
-                    <li><a href="#">3</a></li>
-                    <li><a href="#">4</a></li>
-                    <li><a href="#">5</a></li>
+                  <% for(var i=0; i<page; i++){ %>
+                    <li><a href="#"><%= i + 1 %></a></li>
+                  <% } %>                 
                 </ul>
             </div>
         </div>

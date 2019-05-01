@@ -5,12 +5,13 @@ var moment = require('moment');
 
 router.get('/', function(req, res, next) {
     var date_now = moment().format('YYYY-MM-DD HH:mm:ss:SSS');
+    var limitList = 10; // 한 페이지 게시글 숫자
     mysqlDB.getConnection(function(err, connection){
         if(err){
             console.log('connection pool error'+err);
         }else{
-            var query = 'select board.*, users.userProfile from board inner join users on users.userId=board.userId_w order by board_num asc';
-            // 게시판 테이블 모든 데이터 + 유저테이블의 글 작성자 프로필사진 inner join 조회
+            var query = 'select board.*, users.userProfile from board inner join users on users.userId=board.userId_w order by board_num desc';
+            // 게시판 테이블 모든 데이터 + 유저테이블의 글 작성자 프로필사진 inner join 조회및 내림차순 정렬
             connection.query(query,function (err, rows, fields){
                 if(err){
                     console.log('query error'+err);
@@ -18,9 +19,12 @@ router.get('/', function(req, res, next) {
                     var renderParam ={
                         email : req.session.email, 
                         profileImage : req.session.userProfile, 
-                        userId: req.session.userId, 
-                        rows: rows, 
-                        moment: moment
+                        userId : req.session.userId, 
+                        rows : rows, 
+                        moment : moment,
+                        limitList : limitList, // 한 페이지 게시글 숫자
+                        totalList : rows.length, // 전체 게시글 숫자
+                        page : rows.length / limitList // 페이지 숫자
                     }
                     res.render('board-free', renderParam);
                     connection.release();
