@@ -27,6 +27,8 @@ router.get('/', function(req, res, next) {
                         list : 10,
                         currentPageIdx : 0
                     }
+                    res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0'); 
+                    // 캐시저장X -> 뒤로가기 누르면 조회수값 갱신
                     res.render('board-free', renderParam);
                     connection.release();
                 }
@@ -65,8 +67,9 @@ router.get('/page/:idx', function(req, res, next){
                                     moment : moment,
                                     totalPage:  parseInt(totalList / 10) + 1, // 10개 미만인 페이지의 경우 소수점이 되므로 + 1
                                     list : rows.length, // 조회할 게시물 리스트 개수 = 남은 리스트 개수
-                                    currentPageIdx : req.params.idx
+                                    currentPageIdx : parseInt(req.params.idx)
                                 }
+                                res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
                                 res.render('board-free', renderParam);
                                 connection.release();
                             }else{
@@ -78,8 +81,9 @@ router.get('/page/:idx', function(req, res, next){
                                     moment : moment,
                                     totalPage: parseInt(totalList / 10) + 1,
                                     list : 10,
-                                    currentPageIdx : req.params.idx
+                                    currentPageIdx : parseInt(req.params.idx)
                                 }
+                                res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
                                 res.render('board-free', renderParam);
                                 connection.release();
                             }
@@ -159,8 +163,18 @@ router.get('/detail?:data_board_num', function(req, res, next){
                         content : rows[0].content,
                         rows: rows // 본문 조회값
                     };
-                    res.render('board-free-detail', renderParam);
-                    connection.release();                  
+                
+                    var board_idx = rows[0].board_num; // 쿼리된 번호에 해당하는 게시글의 조회수 +1 해서 업데이트
+                    var updateViewsQuery = 'update board set board.readCount=board.readCount + 1 where board.board_num=?';
+                    connection.query(updateViewsQuery,[board_idx], function(err, rows, fields){
+                        if(err){
+                            console.log('quey error'+err);
+                        }else{
+                            res.render('board-free-detail', renderParam);
+                            connection.release(); 
+                        }
+                    });
+                                     
                 }
             });
         }

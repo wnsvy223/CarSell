@@ -118,38 +118,43 @@
                             </td> 
                             <!--모멘트 객체 넘겨받아서 JS 코드를 이용해 날짜 포멧 변경 GMT => UTC LOCAL -->                                      
                             <td  class="col-md-1 text-center">
-                              <small> <%=rows[i].readCount %></small>
+                              <small><%=rows[i].readCount %></small>
                             </td>
                         </tr>
                     <% } %>            
                 </tbody>
             </table>
             <!-- <a class="btn btn-default pull-right" href="/board-free/write">글쓰기</a> -->
-            
-            <form role="form" method="get" action="/board-free/write" enctype="application/x-www-form-urlencoded" >
-              <div class="form-group">
-                <button class="btn btn-default pull-right">글쓰기</button>
-              </div>
-            </form>
+            <div class="container">
+              <form role="form" method="get" action="/board-free/write" enctype="application/x-www-form-urlencoded" >
+                <div class="form-group">
+                  <button class="btn btn-default pull-right">글쓰기</button>
+                </div>
+              </form>
+            </div>
 
-            <div class="text-center">
-                <ul class="pagination"> <!--게시판 페이징 버튼-->
-                  <% if(currentPageIdx > 0){ %>
-                    <li><a href="/board-free/page/<%= currentPageIdx - 1 %>">&laquo;</a></li>    <!--좌측더보기버튼-->
-                    <li><a>...</a></li>
-                  <% } %>
-                  <% for(var i=0; i<totalPage; i++){ %>  
-                    <% if(currentPageIdx == i){ %>                            
-                      <li class="active"><a href="/board-free/page/<%= i %>"><%= i+1 %></a></li>
-                    <% } else {%>
-                      <li><a href="/board-free/page/<%= i %>"><%= i+1 %></a></li>
-                    <% } %>  
-                  <% } %>     
-                  <% if(currentPageIdx != totalPage-1){ %>
-                    <li><a>...</a></li>
-                    <li><a href="/board-free/page/<%= currentPageIdx + 1 %>">&raquo;</a></li>    <!--우측더보기버튼--> 
-                  <% } %>                
-                </ul>
+            <div class="container">
+              <div class="text-center">
+                  <ul class="pagination"> <!--게시판 페이징 버튼-->
+                    <% if(currentPageIdx > 0){ %>
+                      <li><a href="/board-free/page/<%= 0 %>">&laquo;</a></li>   <!--맨 앞으로 버튼-->
+                      <li><a href="/board-free/page/<%= currentPageIdx - 1 %>">&lsaquo;</a></li>    <!--좌측더보기버튼-->
+                      <li><a>...</a></li>
+                    <% } %>
+                    <% for(var i=0; i<totalPage; i++){ %>  
+                      <% if(currentPageIdx == i){ %>                            
+                        <li class="active"><a href="/board-free/page/<%= i %>"><%= i+1 %></a></li>
+                      <% } else {%>
+                        <li><a href="/board-free/page/<%= i %>"><%= i+1 %></a></li>
+                      <% } %>  
+                    <% } %>     
+                    <% if(currentPageIdx != totalPage-1){ %>
+                      <li><a>...</a></li>
+                      <li><a href="/board-free/page/<%= currentPageIdx + 1 %>">&rsaquo;</a></li>    <!--우측더보기버튼--> 
+                      <li><a href="/board-free/page/<%= totalPage-1 %>">&raquo;</a></li>  <!--맨 뒤로 버튼--> 
+                    <% } %>                
+                  </ul>
+              </div>
             </div>
         </div>
     </div>
