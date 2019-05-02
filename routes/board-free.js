@@ -23,8 +23,9 @@ router.get('/', function(req, res, next) {
                         userId : req.session.userId, 
                         rows : rows, 
                         moment : moment,
-                        totalList : rows.length,
-                        list : 10
+                        totalPage : rows.length / 10,
+                        list : 10,
+                        currentPageIdx : 0
                     }
                     res.render('board-free', renderParam);
                     connection.release();
@@ -42,42 +43,49 @@ router.get('/page/:idx', function(req, res, next){
             console.log('connection pool error'+err);
         }else{
             var queryAll = 'select board.*, users.userProfile from board inner join users on users.userId=board.userId_w order by board_num asc';
-            connection.query(queryAll, function(err, rows, fields){
-                var totalList = rows.length;        
-                var currentPage = parseInt(req.params.idx)  * 10;        
-                var query = 'select board.*, users.userProfile from board inner join users on users.userId=board.userId_w order by board_num desc limit ?,?';
-                connection.query(query, [currentPage, 10], function (err, rows, fields){
-                    if(err){
-                        console.log('query error'+err);
-                    }else{
-                        console.log('페이지:' + currentPage + '길이:' + rows.length);
-                        if(rows.length < 10){
-                            var renderParam ={
-                                email : req.session.email, 
-                                profileImage : req.session.userProfile, 
-                                userId : req.session.userId, 
-                                rows : rows, 
-                                moment : moment,
-                                totalList: totalList,
-                                list : rows.length
-                            }
-                            res.render('board-free', renderParam);
-                            connection.release();
+            connection.query(queryAll, function(err, totalRows, fields){
+                var totalList = totalRows.length;        // 전체 게시물 수
+                var currentPage = parseInt(req.params.idx)  * 10;   // 페이지번호 * 10 = 게시물 인덱스값  
+                if(currentPage < 0 || currentPage > totalList){
+                    res.send('<script type="text/javascript">alert("더 이상 글이 없습니다.");</script>');
+                }else{ 
+                    var query = 'select board.*, users.userProfile from board inner join users on users.userId=board.userId_w order by board_num desc limit ?,?';
+                    // 페이지 번호가 바뀜에 따라 mysql limit + offset으로 10개 단위로 나눠서 조회
+                    connection.query(query, [currentPage, 10], function (err, rows, fields){
+                        if(err){
+                            console.log('query error'+err);
                         }else{
-                            var renderParam ={
-                                email : req.session.email, 
-                                profileImage : req.session.userProfile, 
-                                userId : req.session.userId, 
-                                rows : rows, 
-                                moment : moment,
-                                totalList: totalList,
-                                list : 10
+                            console.log('페이지:' + currentPage + '페이지 인덱스:' + parseInt(req.params.idx));
+                            if(rows.length < 10){ // 페이지에 남은 게시물이 10개 미만일 경우
+                                var renderParam ={
+                                    email : req.session.email, 
+                                    profileImage : req.session.userProfile, 
+                                    userId : req.session.userId, 
+                                    rows : rows, 
+                                    moment : moment,
+                                    totalPage:  parseInt(totalList / 10) + 1, // 10개 미만인 페이지의 경우 소수점이 되므로 + 1
+                                    list : rows.length, // 조회할 게시물 리스트 개수 = 남은 리스트 개수
+                                    currentPageIdx : req.params.idx
+                                }
+                                res.render('board-free', renderParam);
+                                connection.release();
+                            }else{
+                                var renderParam ={
+                                    email : req.session.email, 
+                                    profileImage : req.session.userProfile, 
+                                    userId : req.session.userId, 
+                                    rows : rows, 
+                                    moment : moment,
+                                    totalPage: parseInt(totalList / 10) + 1,
+                                    list : 10,
+                                    currentPageIdx : req.params.idx
+                                }
+                                res.render('board-free', renderParam);
+                                connection.release();
                             }
-                            res.render('board-free', renderParam);
-                            connection.release();
                         }
-                    }
-                });
+                    });
+                } 
             });
         }
     }); 

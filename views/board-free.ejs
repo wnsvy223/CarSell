@@ -134,9 +134,17 @@
 
             <div class="text-center">
                 <ul class="pagination"> <!--게시판 페이징 버튼-->
-                  <% for(var i=0; i<totalList/10; i++){ %>
-                    <li><a href="/board-free/page/<%= i %>"><%= i + 1 %></a></li>
-                  <% } %>                 
+                  <% if(currentPageIdx > 0){ %>
+                    <li><a href="/board-free/page/<%= currentPageIdx - 1 %>">&laquo;</a></li>    <!--좌측더보기버튼-->
+                    <li><a>...</a></li>
+                  <% } %>
+                  <% for(var i=0; i<totalPage; i++){ %>              
+                    <li><a href="/board-free/page/<%= i %>"><%= i+1 %></a></li>
+                  <% } %>     
+                  <% if(currentPageIdx != totalPage-1){ %>
+                    <li><a>...</a></li>
+                    <li><a href="/board-free/page/<%= currentPageIdx + 1 %>">&raquo;</a></li>    <!--우측더보기버튼--> 
+                  <% } %>                
                 </ul>
             </div>
         </div>
