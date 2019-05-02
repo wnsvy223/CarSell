@@ -138,8 +138,12 @@
                     <li><a href="/board-free/page/<%= currentPageIdx - 1 %>">&laquo;</a></li>    <!--좌측더보기버튼-->
                     <li><a>...</a></li>
                   <% } %>
-                  <% for(var i=0; i<totalPage; i++){ %>              
-                    <li><a href="/board-free/page/<%= i %>"><%= i+1 %></a></li>
+                  <% for(var i=0; i<totalPage; i++){ %>  
+                    <% if(currentPageIdx == i){ %>                            
+                      <li class="active"><a href="/board-free/page/<%= i %>"><%= i+1 %></a></li>
+                    <% } else {%>
+                      <li><a href="/board-free/page/<%= i %>"><%= i+1 %></a></li>
+                    <% } %>  
                   <% } %>     
                   <% if(currentPageIdx != totalPage-1){ %>
                     <li><a>...</a></li>
