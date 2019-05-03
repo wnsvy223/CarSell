@@ -3,6 +3,8 @@ var router = express.Router();
 var mysqlDB = require('../mysqlDB');
 var moment = require('moment');
 
+var documentNum = 0; //게시물 번호값 받을 변수 get detail 라우터를 통해 본문 진입시 받아옴. 
+var now = moment().format('YYYY-MM-DD HH:mm:ss:SSS');
 
 router.get('/', function(req, res, next) {
 
@@ -26,7 +28,7 @@ router.get('/', function(req, res, next) {
                             userId : req.session.userId, 
                             rows : rows, 
                             moment : moment,
-                            totalPage : rows.length / 10,
+                            totalPage : parseInt( rows.length / 10) + 1, 
                             list : 10,
                             currentPageIdx : 0
                         }
@@ -44,7 +46,7 @@ router.get('/', function(req, res, next) {
 
 router.get('/page/:idx', function(req, res, next){
     if(!req.session.email){
-        res.render('index'); // 세션이 끊긴 상태면 로그인 페이지로
+        res.render('index'); 
     }else{
         mysqlDB.getConnection(function(err, connection){
             if(err){
@@ -119,16 +121,16 @@ router.get('/write', function(req, res, next){
 
 router.post('/write/commit',function(req, res, next){
     if(!req.session.email){
-        res.render('index'); // 세션이 끊긴 상태면 로그인 페이지로
+        res.render('index'); 
     }else{
         if(req.body.title == '' || req.body.content == ''){
             res.send('<script type="text/javascript">alert("내용을 입력해 주세요");</script>');
         }else{
-            var date_now = moment().format('YYYY-MM-DD HH:mm:ss:SSS'); // 현재시간값 타임스탬프
+
             var param = {
                 title: req.body.title,
                 userId_w: req.session.userId,
-                timeStamp : date_now,
+                timeStamp : now,
                 readCount : 0,
                 content : req.body.content,
                 //profileImage : '/'+req.file.path // multer모듈로 부터 생성된 프로필 이미지파일의 경로
@@ -154,13 +156,49 @@ router.post('/write/commit',function(req, res, next){
     }   
 });
 
+router.post('/write/reply', function(req, res, next){
+    if(!req.session.email){
+        res.render('index'); 
+    }else{
+        if(req.body.content_reply == ''){
+            res.send('<script type="text/javascript">alert("내용을 입력해 주세요");</script>');
+        }else{
+       
+            var reply_param = {
+                board_num: documentNum,
+                userId_reply: req.session.userId,
+                content : req.body.content_reply,
+                timeStamp : now
+            };
+           
+            var query = 'insert into board_reply (board_num, userId_reply, reply_content, timeStamp) values(?,?,?,?)';
+            mysqlDB.getConnection(function(err, connection){
+                if(err){
+                    console.log('connection pool error'+err);
+                }else{
+                    connection.query(query, [reply_param.board_num, reply_param.userId_reply, reply_param.content, reply_param.timeStamp], function(err, rows, fields){
+                        if(err){
+                            console.log('quey error'+err);
+                        }else{
+                            console.log('댓글작성완료');
+                            res.redirect('/board-free');
+                            connection.release();
+                        }
+                    });
+                }
+            });
+        }
+    }
+});
+
+
 router.get('/detail?:data_board_num', function(req, res, next){
     if(!req.session.email){
-        res.render('index'); // 세션이 끊긴 상태면 로그인 페이지로
+        res.render('index'); 
     }else{
         // 뷰에서 href를 통해 넘겨준 시멘틱URL 값에 해당 게시물의 번호가 날아옴.
         console.log('시멘틱URL 인덱스 : ' + req.query.index);
-
+        documentNum = req.query.index;
         mysqlDB.getConnection(function(err, connection){
             if(err){
                 console.log('connection pool error'+err);

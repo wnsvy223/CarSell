@@ -82,36 +82,39 @@
     
     <div class="row margin-top">
             <div class="container">
-              <div class="col-md-2"></div>       
-              <div class="col-md-14">
+            
                   <h2 class="text-center margin-top well">자유 게시판</h2><p></p>       
-                  <form role="form" method="POST" action="/board-free/write/commit" enctype="application/x-www-form-urlencoded" >   
-                      <div class="table table-responsive shadow-textarea margin-top">
-                      <table class="table table-striped">
-                            
-                            <tr>
-                                <td>작성자</td>  
-                                <td class="well well-sm">                      
-                                    <% if(locals.userProfile_w){ %>                        
-                                        <img  class="img-circle margin-profile-right" width="50" height="50" alt="..." src= <%= userProfile_w %>                                                     
-                                    <% } %>   
-                                    <span name="userId_w" value="<%= userId %>" readonly><%=locals.userId_w %></span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>제목</td>
-                                <td class="well well-sm"><textarea type="text"  class="form-control" name="title" readonly><%=locals.board_title %></textarea></td>
-                            </tr>
-                            
-                            <tr>
-                                <td>글내용</td>
-                                <td class="well well-sm"><textarea rows="20" cols="100" name="content" class="form-control z-depth-1" readonly><%=locals.content %></textarea></td>
-                            </tr>
+                  <form role="form" method="POST" action="/board-free/write/reply" enctype="application/x-www-form-urlencoded" >   
+                      <div class="shadow-textarea margin-top">
+                      <table class="table table-responsive table-striped">
+                          
+                          <tr>
+                              <td>글번호</td>  
+                              <td class="well well-sm"><%=rows[0].board_num %></td>
+                          </tr>
+                          <tr>
+                              <td>작성자</td>  
+                              <td class="well well-sm">                      
+                                  <% if(locals.userProfile_w){ %>                        
+                                      <img  class="img-circle margin-profile-right" width="50" height="50" alt="..." src= <%= userProfile_w %>                                                     
+                                  <% } %>   
+                                  <span name="userId_w" value="<%= userId %>" readonly><%=locals.userId_w %></span>
+                              </td>
+                          </tr>
+                          <tr>
+                              <td>제목</td>
+                              <td class="well well-sm"><%=locals.board_title %></td>
+                          </tr>
+                          
+                          <tr>
+                              <td>글내용</td>
+                              <td class="well well-sm"><%=locals.content %></textarea></td>
+                          </tr>
   
                         <tr>  
                             <tr>
                                 <td>댓글쓰기</td>
-                                <td class="well well-sm"><textarea rows="5" cols="100" name="content" class="form-control z-depth-1"></textarea></td>
+                                <td class="well well-sm"><textarea rows="5" cols="100" name="content_reply" class="form-control z-depth-1"></textarea></td>
                             </tr>
                             <td colspan="2"  class="text-center">        
                                 <input type="hidden" name="num"  value="">
@@ -128,9 +131,8 @@
                       </div>
                   </form>   
               </div>
-          </div>
-        </div>
-
+         
+    </div>
     <!-- Detail Board Content -->
     
   
