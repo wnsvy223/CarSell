@@ -10,7 +10,6 @@ var now = moment().format('YYYY-MM-DD HH:mm:ss:SSS');
 
 
 router.get('/', function(req, res, next) {
-
     if(!req.session.email){
         res.render('index'); // 세션이 끊긴 상태면 로그인 페이지로
     }else{ 
@@ -182,7 +181,7 @@ router.post('/write/reply', function(req, res, next){
                         if(err){
                             console.log('quey error'+err);
                         }else{
-                            var url = '/board-free/detail?index=' + documentNum + '&userProfile_w='+profileImage_w + '&page=';
+                            var url = '/board-free/detail?index=' + documentNum + '&userProfile_w=' + profileImage_w + '&pageNum=' + pageNum;
                             res.redirect(url);
                             connection.release();
                         }
