@@ -89,15 +89,15 @@
                       <table class="table table-responsive table-striped">
                           
                           <tr>
-                              <td>글번호</td>  
+                              <td class="well well-sm">글번호</td>  
                               <td class="well well-sm"><%=rows[0].board_num %></td>
                           </tr>
                           <tr>
-                              <td>작성날짜</td>  
+                              <td class="well well-sm">작성날짜</td>  
                               <td class="well well-sm"><%=moment(rows[0].timeStamp).format('YYYY-MM-DD HH:mm:ss') %></td>
                           </tr>
                           <tr>
-                              <td>작성자</td>  
+                              <td class="well well-sm">작성자</td>  
                               <td class="well well-sm">                      
                                   <% if(locals.userProfile_w){ %>                        
                                       <img  class="img-circle margin-profile-right" width="35" height="35" alt="..." src= <%= userProfile_w %>                                                     
@@ -106,12 +106,12 @@
                               </td>
                           </tr>
                           <tr>
-                              <td>제목</td>
+                              <td class="well well-sm">제목</td>
                               <td class="well well-sm"><%=locals.board_title %></td>
                           </tr>
                           
                           <tr>
-                              <td>글내용</td>
+                              <td class="well well-sm">글내용</td>
                               <td class="well well-sm"><%=locals.content %></td>
                           </tr>
 
@@ -127,8 +127,8 @@
                                 <input type="hidden" name="ref_step"  value="">
                                 <input type="hidden" name="ref_level"  value="">                                  
                                 <input type="submit" value="완료" class="btn btn-success">                           
-                                <input type="reset" value="취소" class="btn btn-danger" onclick="location.href='/board-free'">
-                                <input type="button" value="목록으로" class="btn btn-primary" onclick="location.href='/board-free'">
+                                <input type="reset" value="취소" class="btn btn-danger" onclick="location.href='/board-free/page/<%= pageNum %>'">
+                                <input type="button" value="목록으로" class="btn btn-primary" onclick="location.href='/board-free/page/<%= pageNum %>'">
                             </td>
                         </tr>
                        
@@ -140,7 +140,7 @@
                               <thead> <!-- 게시판 테이블 헤더부분-->
                                   <tr>
                                       <th>ID</th>
-                                      <th class="text-center">댓글내용</th>
+                                      <th>댓글내용</th>
                                       <th>날짜</th>    
                                   </tr>
                               </thead>
@@ -148,10 +148,10 @@
                                 <tbody> 
                                   <% for(var i= 0; i<replyLength; i++){ %>
                                       <tr>
-                                          <td class="col-md-1">
+                                          <td class="col-md-2">
                                             <small><%= reply[i].userId_reply %></small>
                                           </td>
-                                          <td class="col-md-6 text-center">
+                                          <td class="col-md-8">
                                             <small><%= reply[i].reply_content %></small>
                                           </td>
                                           <td class="col-md-2">

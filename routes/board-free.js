@@ -3,9 +3,11 @@ var router = express.Router();
 var mysqlDB = require('../mysqlDB');
 var moment = require('moment');
 
-var documentNum = 0; //게시물 번호값 받을 변수 get detail 라우터를 통해 본문 진입시 받아옴. 
-var profileImage_w = '';
+var documentNum = 0; //게시물 번호값 받을 변수 
+var profileImage_w = ''; // 게시물 작성자 프로필사진
+var pageNum = 0; // 게시물 포함된 페이지 번호    -> 3가지를 get detail 라우터를 통해 본문 진입시 받아옴. 
 var now = moment().format('YYYY-MM-DD HH:mm:ss:SSS');
+
 
 router.get('/', function(req, res, next) {
 
@@ -180,7 +182,7 @@ router.post('/write/reply', function(req, res, next){
                         if(err){
                             console.log('quey error'+err);
                         }else{
-                            var url = '/board-free/detail?index=' + documentNum + '&userProfile_w='+profileImage_w;
+                            var url = '/board-free/detail?index=' + documentNum + '&userProfile_w='+profileImage_w + '&page=';
                             res.redirect(url);
                             connection.release();
                         }
@@ -196,10 +198,12 @@ router.get('/detail?:data_board_num', function(req, res, next){
     if(!req.session.email){
         res.render('index'); 
     }else{
-        // 뷰에서 href를 통해 넘겨준 시멘틱URL 값에 해당 게시물의 번호가 날아옴.
+        // 뷰에서 href를 통해 넘겨준 시멘틱URL 값에 해당 게시물의 번호 , 프로필url, 페이지 번호가 날아옴.
         // console.log('시멘틱URL 인덱스 : ' + req.query.index);
         documentNum = req.query.index;
         profileImage_w = req.query.userProfile_w;
+        pageNum = req.query.pageNum;
+        console.log('페이지번호'+pageNum);
         mysqlDB.getConnection(function(err, connection){
             if(err){
                 console.log('connection pool error'+err);
@@ -229,7 +233,7 @@ router.get('/detail?:data_board_num', function(req, res, next){
                                     rows: rows, // 본문 조회값
                                     reply: subrows, // 댓글 조회값
                                     replyLength : subrows.length, // 댓글 갯수
-                                    
+                                    pageNum : parseInt(pageNum)// 게시물 페이지 번호
                                 };
                                
                                 var board_idx = rows[0].board_num; // 쿼리된 번호에 해당하는 게시글의 조회수 +1 해서 업데이트

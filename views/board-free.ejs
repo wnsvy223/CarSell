@@ -105,7 +105,7 @@
                             <td class="col-md-1"><%=rows[i].board_num %></td>
                             <td class="col-md-6 text_reduction">
                               <span>
-                                <a  href="/board-free/detail?index=<%=rows[i].board_num %>&userProfile_w=<%=rows[i].userProfile %>"><%=rows[i].board_title %></a>
+                                <a  href="/board-free/detail?index=<%=rows[i].board_num %>&userProfile_w=<%=rows[i].userProfile %>&pageNum=<%=currentPageIdx %>"><%=rows[i].board_title %></a>
                                 <!-- JS에서 쿼리스트링으로 추출할수 있도록 Url에 게시물번호와 작성자프로필사진값 같이 전달-->
                               </span>
                             </td>
@@ -121,7 +121,8 @@
                               <small><%=rows[i].readCount %></small>
                             </td>
                         </tr>
-                    <% } %>            
+                    <% } %>         
+
                 </tbody>
             </table>
             <!-- <a class="btn btn-default pull-right" href="/board-free/write">글쓰기</a> -->
