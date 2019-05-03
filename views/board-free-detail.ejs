@@ -93,10 +93,14 @@
                               <td class="well well-sm"><%=rows[0].board_num %></td>
                           </tr>
                           <tr>
+                              <td>작성날짜</td>  
+                              <td class="well well-sm"><%=moment(rows[0].timeStamp).format('YYYY-MM-DD HH:mm:ss') %></td>
+                          </tr>
+                          <tr>
                               <td>작성자</td>  
                               <td class="well well-sm">                      
                                   <% if(locals.userProfile_w){ %>                        
-                                      <img  class="img-circle margin-profile-right" width="50" height="50" alt="..." src= <%= userProfile_w %>                                                     
+                                      <img  class="img-circle margin-profile-right" width="35" height="35" alt="..." src= <%= userProfile_w %>                                                     
                                   <% } %>   
                                   <span name="userId_w" value="<%= userId %>" readonly><%=locals.userId_w %></span>
                               </td>
@@ -108,9 +112,10 @@
                           
                           <tr>
                               <td>글내용</td>
-                              <td class="well well-sm"><%=locals.content %></textarea></td>
+                              <td class="well well-sm"><%=locals.content %></td>
                           </tr>
-  
+
+                          
                         <tr>  
                             <tr>
                                 <td>댓글쓰기</td>
@@ -121,17 +126,50 @@
                                 <input type="hidden" name="ref"  value="">
                                 <input type="hidden" name="ref_step"  value="">
                                 <input type="hidden" name="ref_level"  value="">                                  
-                                <input type="submit" value="완료" class="btn btn-success">                      
+                                <input type="submit" value="완료" class="btn btn-success">                           
                                 <input type="reset" value="취소" class="btn btn-danger" onclick="location.href='/board-free'">
                                 <input type="button" value="목록으로" class="btn btn-primary" onclick="location.href='/board-free'">
                             </td>
                         </tr>
                        
-                       </table>                    
+                       </table>    
+                       
+                       <% if(replyLength > 0){ %>
+                        <tr>
+                            <table class="table table-responsive table-striped">
+                              <thead> <!-- 게시판 테이블 헤더부분-->
+                                  <tr>
+                                      <th>ID</th>
+                                      <th class="text-center">댓글내용</th>
+                                      <th>날짜</th>    
+                                  </tr>
+                              </thead>
+
+                                <tbody> 
+                                  <% for(var i= 0; i<replyLength; i++){ %>
+                                      <tr>
+                                          <td class="col-md-1">
+                                            <small><%= reply[i].userId_reply %></small>
+                                          </td>
+                                          <td class="col-md-6 text-center">
+                                            <small><%= reply[i].reply_content %></small>
+                                          </td>
+                                          <td class="col-md-2">
+                                            <small><%= moment(reply[i].timeStamp_reply).format('YYYY-MM-DD HH:mm:ss') %></small>
+                                          </td>
+                                                                    
+                                      </tr>
+                                  <% } %>            
+                                </tbody>
+                          
+                            </table>
+                          </tr>
+                        <% } %> 
+
                       </div>
                   </form>   
               </div>
-         
+
     </div>
     <!-- Detail Board Content -->
     
