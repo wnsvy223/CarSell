@@ -118,7 +118,7 @@
                           
                         <tr>  
                             <tr>
-                                <td>댓글쓰기</td>
+                                <td class="well well-sm">댓글쓰기</td>
                                 <td class="well well-sm"><textarea rows="5" cols="100" name="content_reply" class="form-control z-depth-1"></textarea></td>
                             </tr>
                             <td colspan="2"  class="text-center">        
@@ -149,6 +149,7 @@
                                   <% for(var i= 0; i<replyLength; i++){ %>
                                       <tr>
                                           <td class="col-md-2">
+                                            <img class="img-circle margin-profile-right" width="25" height="25" src= <%=reply[i].userProfile_reply %>
                                             <small><%= reply[i].userId_reply %></small>
                                           </td>
                                           <td class="col-md-8">

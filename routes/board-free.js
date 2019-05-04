@@ -196,12 +196,12 @@ router.get('/detail?:data_board_num', function(req, res, next){
     if(!req.session.email){
         res.render('index'); 
     }else{
-        // 뷰에서 href를 통해 넘겨준 시멘틱URL 값에 해당 게시물의 번호 , 프로필url, 페이지 번호가 날아옴.
+        // 뷰에서 href를 통해 넘겨준 시멘틱URL 값에 해당 게시물의 번호 , 작성자 프로필url, 페이지 번호가 날아옴.
         // console.log('시멘틱URL 인덱스 : ' + req.query.index);
         documentNum = req.query.index;
         profileImage_w = req.query.userProfile_w;
         pageNum = req.query.pageNum;
-        console.log('페이지번호'+pageNum);
+        //console.log('페이지번호'+pageNum);
         mysqlDB.getConnection(function(err, connection){
             if(err){
                 console.log('connection pool error'+err);
@@ -212,12 +212,12 @@ router.get('/detail?:data_board_num', function(req, res, next){
                     if(err){
                         console.log('quey error'+err);
                     }else{     
-                               
-                        var select_reply = 'select * from board_reply where board_num=?'
+                        var select_reply = 'select board_reply.*, (select users.userProfile as userProfile_reply from users where board_reply.userId_reply = users.userId) userProfile_reply from board_reply where board_reply.board_num=?'
                         connection.query(select_reply, [documentNum], function(err, subrows, fields){
                             if(err){
                                 console.log('quey error'+err);
                             }else{
+                                //console.log('댓글 조회값'+JSON.stringify(subrows));
                                 var renderParam = {
                                     email : req.session.email, 
                                     profileImage : req.session.userProfile, 
@@ -233,7 +233,6 @@ router.get('/detail?:data_board_num', function(req, res, next){
                                     replyLength : subrows.length, // 댓글 갯수
                                     pageNum : parseInt(pageNum)// 게시물 페이지 번호
                                 };
-                               
                                 var board_idx = rows[0].board_num; // 쿼리된 번호에 해당하는 게시글의 조회수 +1 해서 업데이트
                                 //console.log('인덱스', + board_idx);
                                 var updateViewsQuery = 'update board set board.readCount=board.readCount + 1 where board.board_num=?';
