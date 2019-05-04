@@ -105,7 +105,14 @@
                             <td class="col-md-1"><%=rows[i].board_num %></td>
                             <td class="col-md-6 text_reduction">
                               <span>
-                                <a  href="/board-free/detail?index=<%=rows[i].board_num %>&userProfile_w=<%=rows[i].userProfile %>&pageNum=<%=currentPageIdx %>"><%=rows[i].board_title %></a>
+                                <a style="color:black;" href="/board-free/detail?index=<%=rows[i].board_num %>&userProfile_w=<%=rows[i].userProfile %>&pageNum=<%=currentPageIdx %>">
+                                  <%=rows[i].board_title %>
+                                    <% if(rows[i].reply_count > 0){ %>
+                                      <a>
+                                        [<%=rows[i].reply_count %>]
+                                      </a>
+                                    <% } %>
+                                </a>
                                 <!-- JS에서 쿼리스트링으로 추출할수 있도록 Url에 게시물번호와 작성자프로필사진값 같이 전달-->
                               </span>
                             </td>

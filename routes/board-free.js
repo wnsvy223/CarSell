@@ -17,13 +17,12 @@ router.get('/', function(req, res, next) {
             if(err){
                 console.log('connection pool error'+err);
             }else{
-                var query = 'select board.*, users.userProfile from board inner join users on users.userId=board.userId_w order by board_num desc';
-                // 게시판 테이블 모든 데이터 + 유저테이블의 글 작성자 프로필사진 inner join 조회및 내림차순 정렬
+                var query = 'select board.*,users.userProfile,(select count(*) as reply_count from board_reply where board.board_num = board_reply.board_num) reply_count from board inner join users on users.userId = board.userId_w order by board.board_num desc';
+                // 게시판 테이블 모든 데이터 + 유저테이블의 글 작성자 프로필사진 inner join 조회후 게시물당 댓글수 서브쿼리 별칭reply_count부여 및 내림차순 정렬
                 connection.query(query,function (err, rows, fields){
                     if(err){
                         console.log('query error'+err);
-                    }else{              
-                        //console.log('전체게시물 : ' + rows.length);
+                    }else{                
                         var renderParam ={
                             email : req.session.email, 
                             profileImage : req.session.userProfile, 
@@ -54,14 +53,14 @@ router.get('/page/:idx', function(req, res, next){
             if(err){
                 console.log('connection pool error'+err);
             }else{
-                var queryAll = 'select board.*, users.userProfile from board inner join users on users.userId=board.userId_w order by board_num asc';
+                var queryAll = 'select board.*,users.userProfile,(select count(*) as reply_count from board_reply where board.board_num = board_reply.board_num) reply_count from board inner join users on users.userId = board.userId_w order by board.board_num desc';
                 connection.query(queryAll, function(err, totalRows, fields){
                     var totalList = totalRows.length;        // 전체 게시물 수
                     var currentPage = parseInt(req.params.idx)  * 10;   // 페이지번호 * 10 = 게시물 인덱스값  
                     if(currentPage < 0 || currentPage > totalList){
                         res.send('<script type="text/javascript">alert("더 이상 글이 없습니다.");</script>');
                     }else{ 
-                        var query = 'select board.*, users.userProfile from board inner join users on users.userId=board.userId_w order by board_num desc limit ?,?';
+                        var query = 'select board.*,users.userProfile,(select count(*) as reply_count from board_reply where board.board_num = board_reply.board_num) reply_count from board inner join users on users.userId = board.userId_w order by board.board_num desc limit ?,?';
                         // 페이지 번호가 바뀜에 따라 mysql limit + offset으로 10개 단위로 나눠서 조회
                         connection.query(query, [currentPage, 10], function (err, rows, fields){
                             if(err){
