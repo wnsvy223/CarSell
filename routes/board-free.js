@@ -208,7 +208,7 @@ router.get('/detail?:data_board_num', function(req, res, next){
             }else{
                 var query = 'select * from board where board.board_num=?';
             
-                connection.query(query, [req.query.index], function(err, rows, fields){
+                connection.query(query, [documentNum], function(err, rows, fields){
                     if(err){
                         console.log('quey error'+err);
                     }else{     
@@ -254,5 +254,14 @@ router.get('/detail?:data_board_num', function(req, res, next){
     } 
 });
 
+router.post('/delete', function(req, res, next){
+    console.log('삭제');
+    res.redirect('/board-free');
+});
+
+router.post('/update', function(req, res, next){
+    console.log('수정');
+    res.redirect('/board-free');
+});
 
 module.exports = router;

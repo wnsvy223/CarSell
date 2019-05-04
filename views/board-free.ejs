@@ -99,7 +99,12 @@
                     </tr>
                 </thead>
                 <tbody> <!-- 게시판 테이블 본문부분-->
-                    
+                  <style>
+                    .badge {
+                      background-color:coral;
+                      border-radius: 15px;
+                    }
+                  </style>
                     <% for(var i= 0; i<list; i++){ %>
                         <tr>
                             <td class="col-md-1"><%=rows[i].board_num %></td>
@@ -108,21 +113,21 @@
                                 <a style="color:black;" href="/board-free/detail?index=<%=rows[i].board_num %>&userProfile_w=<%=rows[i].userProfile %>&pageNum=<%=currentPageIdx %>">
                                   <%=rows[i].board_title %>
                                     <% if(rows[i].reply_count > 0){ %>
-                                      <a>
-                                        [<%=rows[i].reply_count %>]
-                                      </a>
+                                      <span class="badge"><%=rows[i].reply_count %></span>                           
                                     <% } %>
                                 </a>
                                 <!-- JS에서 쿼리스트링으로 추출할수 있도록 Url에 게시물번호와 작성자프로필사진값 같이 전달-->
                               </span>
                             </td>
+                        
                             <td class="col-md-2">
                                 <img  class="img-circle margin-left margin-profile-right" width="25" height="25" alt="..." src= <%=rows[i].userProfile %>
-                                <a><%=rows[i].userId_w %></a>
+                                <a><%=rows[i].userId_w %></a>                        
                             </td>
+                    
                             <td class="col-md-2 text-center">
                               <small><%=moment(rows[i].timeStamp).format('YYYY-MM-DD HH:mm:ss')%></small>
-                            </td> 
+                            </td>         
                             <!--모멘트 객체 넘겨받아서 JS 코드를 이용해 날짜 포멧 변경 GMT => UTC LOCAL -->                                      
                             <td  class="col-md-1 text-center">
                               <small><%=rows[i].readCount %></small>
@@ -136,7 +141,7 @@
             <div class="container">
               <form role="form" method="get" action="/board-free/write" enctype="application/x-www-form-urlencoded" >
                 <div class="form-group">
-                  <button class="btn btn-default pull-right">글쓰기</button>
+                  <button class="btn btn-primary pull-right">글쓰기</button>
                 </div>
               </form>
             </div>
