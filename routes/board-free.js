@@ -8,7 +8,7 @@ var profileImage_w = ''; // 게시물 작성자 프로필사진
 var pageNum = 0; // 게시물 포함된 페이지 번호    -> 3가지를 get detail 라우터를 통해 본문 진입시 받아옴. 
 var now = moment().format('YYYY-MM-DD HH:mm:ss:SSS');
 
-
+// 게시판 메인 페이지
 router.get('/', function(req, res, next) {
     if(!req.session.email){
         res.render('index'); // 세션이 끊긴 상태면 로그인 페이지로
@@ -44,7 +44,7 @@ router.get('/', function(req, res, next) {
     }
 }); 
 
-
+// 페이징 처리
 router.get('/page/:idx', function(req, res, next){
     if(!req.session.email){
         res.render('index'); 
@@ -105,7 +105,7 @@ router.get('/page/:idx', function(req, res, next){
     }
 });
 
-
+// 게시판 글쓰기 페이지
 router.get('/write', function(req, res, next){  
     if(!req.session.email){
         res.render('index'); // 세션이 끊긴 상태면 로그인 페이지로
@@ -119,7 +119,7 @@ router.get('/write', function(req, res, next){
     }  
 });
 
-
+// 게시판 글쓰기 요청 처리
 router.post('/write/commit',function(req, res, next){
     if(!req.session.email){
         res.render('index'); 
@@ -157,6 +157,7 @@ router.post('/write/commit',function(req, res, next){
     }   
 });
 
+//게시판 댓글쓰기 요청 처리
 router.post('/write/reply', function(req, res, next){
     if(!req.session.email){
         res.render('index'); 
@@ -191,7 +192,7 @@ router.post('/write/reply', function(req, res, next){
     }
 });
 
-
+// 게시판 본문 내용 보기 페이지
 router.get('/detail?:data_board_num', function(req, res, next){
     if(!req.session.email){
         res.render('index'); 
@@ -254,12 +255,32 @@ router.get('/detail?:data_board_num', function(req, res, next){
     } 
 });
 
-router.post('/delete', function(req, res, next){
-    console.log('삭제');
-    res.redirect('/board-free');
+// 게시글 삭제 
+router.get('/delete?:index', function(req, res, next){
+
+    var board_idx = req.query.index;
+    var page_idx = req.query.pageNum; 
+    mysqlDB.getConnection(function(err, connection){
+        if(err){
+            console.log('connection pool error'+err);
+        }else{
+            var query = 'delete from board where board_num=?';       
+            connection.query(query, [board_idx], function(err, rows, fields){
+                if(err){
+                    console.log('quey error'+err);
+                }else{     
+                    var url = '/board-free/page/' + page_idx;
+                    res.redirect(url);
+                    connection.release(); 
+                }
+            });
+        }
+    });   
 });
 
-router.post('/update', function(req, res, next){
+
+// 게시글 수정
+router.get('/update?:index', function(req, res, next){
     console.log('수정');
     res.redirect('/board-free');
 });
