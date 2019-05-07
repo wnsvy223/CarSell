@@ -319,6 +319,7 @@ router.get('/update?:index', function(req, res, next){
     }  
 });
 
+// 게시글 수정 요청
 router.post('/update/commit', function(req, res, next){
     if(!req.session.email){
         res.render('index'); // 세션이 끊긴 상태면 로그인 페이지로
