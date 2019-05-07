@@ -88,7 +88,62 @@
             <% }else{ %>
               <h2 class="text-center">글 수정하기</h2><p></p>
             <% } %>
-            <form role="form" method="POST" action="/board-free/write/commit" enctype="application/x-www-form-urlencoded" >   
+
+            <% if(func === 'write'){ %>  
+              <form role="form" method="POST" action="/board-free/write/commit" enctype="application/x-www-form-urlencoded" >   
+                  <div class="table table-responsive">
+                  <table class="table table-striped">
+                    <tr>
+                        <td>작성자</td>
+                        <td><input type="text"  class="form-control" name="userId_w" value="<%= userId %>" readonly></td>
+                    </tr>
+                    <tr>
+                        <td>제목</td>
+                        <td><input type="text"  class="form-control" name="title"></td>
+                    </tr>
+                    <tr>
+                        <td>이메일</td>
+                        <td><input type="email"  class="form-control" name="email" value="<%= email %>" readonly></td>
+                    </tr>
+                    
+                    <tr>
+                        <td>첨부파일</td>
+                        <td>
+                            <div class="file_input_div">
+                                <input type="text" id="fileName" placeholder="첨부할 파일을 선택하세요." class="file_input_textbox form-control input-lg" readonly >
+                                <input type="file" name="file" class="file_input_hidden" onchange="javascript: document.getElementById('fileName').value = this.value"/>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>글내용</td>
+                        <td><textarea rows="10" cols="50" name="content" class="form-control"></textarea></td>
+                    </tr>
+                    <tr>  
+                        <td colspan="2"  class="text-center">
+                        
+                            <input type="hidden" name="num"  value="">
+                            <input type="hidden" name="ref"  value="">
+                            <input type="hidden" name="ref_step"  value="">
+                            <input type="hidden" name="ref_level"  value="">                                  
+                            <input type="submit" value="완료" class="btn green"> 
+
+                            <% if(func === 'write'){ %>             
+                              <a class="btn red" href="/board-free/page/<%= pageNum %>">취소</a>
+                              <a class="btn blue" href="/board-free/page/<%= pageNum %>">목록으로</a>
+                            <% }else{ %>
+                              <a class="btn red" href="/board-free/detail?index=<%=documentNum %>&userProfile_w=<%=profileImage %>&pageNum=<%=pageNum %>">취소</a>
+                              <a class="btn blue" href="/board-free/page/<%= pageNum %>">목록으로</a>
+                            <% } %>                                  
+                      </td>
+                      </tr>
+                  
+                  </table>                    
+                  </div>
+              </form>   
+            <% }else{ %>
+              <form role="form" method="POST" action="/board-free/update/commit" enctype="application/x-www-form-urlencoded" >   
                 <div class="table table-responsive">
                 <table class="table table-striped">
                   <tr>
@@ -97,7 +152,7 @@
                   </tr>
                   <tr>
                       <td>제목</td>
-                      <td><input type="text"  class="form-control" name="title"></td>
+                      <td><input type="text"  class="form-control" name="title_update" value="<%= title_update %>"></td>
                   </tr>
                   <tr>
                       <td>이메일</td>
@@ -116,7 +171,7 @@
                   
                   <tr>
                       <td>글내용</td>
-                      <td><textarea rows="10" cols="50" name="content" class="form-control"></textarea></td>
+                      <td><textarea rows="10" cols="50" name="content_update" class="form-control"><%= content_update %></textarea></td>
                   </tr>
                   <tr>  
                       <td colspan="2"  class="text-center">
@@ -128,18 +183,19 @@
                           <input type="submit" value="완료" class="btn green"> 
 
                           <% if(func === 'write'){ %>             
-                            <a class="btn red" href="/board-free">취소</a>
-                            <a class="btn blue" href="/board-free">목록으로</a>
+                            <a class="btn red" href="/board-free/page/<%= pageNum %>">취소</a>
+                            <a class="btn blue" href="/board-free/page/<%= pageNum %>">목록으로</a>
                           <% }else{ %>
                             <a class="btn red" href="/board-free/detail?index=<%=documentNum %>&userProfile_w=<%=profileImage %>&pageNum=<%=pageNum %>">취소</a>
                             <a class="btn blue" href="/board-free/page/<%= pageNum %>">목록으로</a>
                           <% } %>                                  
                     </td>
                     </tr>
-                 
-                 </table>                    
+                
+                </table>                    
                 </div>
             </form>   
+          <% } %>
         </div>
     </div>
   </div>

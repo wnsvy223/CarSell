@@ -7,8 +7,7 @@ var documentNum = 0; //게시물 번호값 받을 변수
 var profileImage_w = ''; // 게시물 작성자 프로필사진
 var pageNum = 0; // 게시물 포함된 페이지 번호    -> 3가지를 get detail 라우터를 통해 본문 진입시 받아옴. 
 var now = moment().format('YYYY-MM-DD HH:mm:ss:SSS');
-var documentTitle = '';
-var documentContent = '';
+
 
 // 게시판 메인 페이지
 router.get('/', function(req, res, next) {
@@ -286,23 +285,69 @@ router.get('/delete?:index', function(req, res, next){
 });
 
 
-// 게시글 수정
+// 게시글 수정 페이지
 router.get('/update?:index', function(req, res, next){  
     if(!req.session.email){
         res.render('index'); // 세션이 끊긴 상태면 로그인 페이지로
     }else{
-        var renderParam = {
-            email : req.session.email, 
-            profileImage : req.session.userProfile, 
-            userId: req.session.userId,
-            func: 'update',
-            documentNum : req.query.index, // 게시물 번호
-            pageNum : pageNum  // 페이지 번호
-        };
-        console.log('수정 : ' + JSON.stringify(renderParam));
-        res.render('board-free-write', renderParam);
-       
+        mysqlDB.getConnection(function(err, connection){
+            if(err){
+                console.log('connection pool error'+err);
+            }else{
+                var query = 'select board.board_title, board.content from board where board.board_num =?';    
+                connection.query(query, [req.query.index], function(err, rows, fields){
+                    if(err){
+                        console.log('quey error'+err);
+                    }else{         
+                        var renderParam = {
+                            email : req.session.email, 
+                            profileImage : req.session.userProfile, 
+                            userId: req.session.userId,
+                            func: 'update',
+                            documentNum : req.query.index, // 게시물 번호
+                            pageNum : pageNum,  // 페이지 번호
+                            title_update : rows[0].board_title,
+                            content_update : rows[0].content
+                        };
+                        console.log('수정 : ' + JSON.stringify(renderParam));
+                        res.render('board-free-write', renderParam);
+                    }
+                });   
+                
+            }
+        });  
     }  
+});
+
+router.post('/update/commit', function(req, res, next){
+    if(!req.session.email){
+        res.render('index'); // 세션이 끊긴 상태면 로그인 페이지로
+    }else{
+        mysqlDB.getConnection(function(err, connection){
+            if(err){
+                console.log('connection pool error'+err);
+            }else{
+                var title_update = req.body.title_update;
+                var content_update = req.body.content_update;
+                var board_num_update = documentNum;
+                
+                var query = 'update board set board.board_title=?, board.content=? where board.board_num=?';    
+                connection.query(query, [title_update, content_update, board_num_update], function(err, rows, fields){
+                    if(err){
+                        console.log('quey error'+err);
+                    }else{     
+                        console.log('수정내용 : ' + title_update + content_update + board_num_update);
+                        var url = '/board-free/detail?index=' + documentNum + '&userProfile_w=' + profileImage_w + '&pageNum=' + pageNum;
+                        res.redirect(url);
+                        connection.release(); 
+                        console.log('수정완료');
+                    }
+                });   
+                
+            }
+        });
+      
+    }
 });
 
 module.exports = router;
