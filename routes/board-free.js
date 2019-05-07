@@ -288,7 +288,7 @@ router.get('/delete?:index', function(req, res, next){
 // 게시글 수정 페이지
 router.get('/update?:index', function(req, res, next){  
     if(!req.session.email){
-        res.render('index'); // 세션이 끊긴 상태면 로그인 페이지로
+        res.render('index'); 
     }else{
         mysqlDB.getConnection(function(err, connection){
             if(err){
@@ -322,7 +322,7 @@ router.get('/update?:index', function(req, res, next){
 // 게시글 수정 요청
 router.post('/update/commit', function(req, res, next){
     if(!req.session.email){
-        res.render('index'); // 세션이 끊긴 상태면 로그인 페이지로
+        res.render('index'); 
     }else{
         mysqlDB.getConnection(function(err, connection){
             if(err){
@@ -348,6 +348,35 @@ router.post('/update/commit', function(req, res, next){
             }
         });
       
+    }
+});
+
+router.get('/showProfile', function(req, res, next){
+    if(!req.session.email){
+        res.render('index'); 
+    }else{
+        var board_idx = req.query.index;    
+        mysqlDB.getConnection(function(err, connection){
+            if(err){
+                console.log('quey error'+err);
+            }else{  
+                var query = 'select users.userId, users.email, users.userProfile from users where userId = (select board.userId_w from board where board.board_num=?)'
+                connection.query(query, [board_idx], function(err, rows, fields){
+                    if(err){
+                        console.log('quey error'+err);
+                    }else{     
+                        console.log('프로필 보기' + JSON.stringify(rows[0]));
+                        var params = {
+                            email : rows[0].email, 
+                            profileImage : rows[0].userProfile, 
+                            userId : rows[0].userId,
+                            func : 'showProfile'
+                        };
+                        res.render('profile',params);
+                    }
+                });   
+            }
+        });
     }
 });
 

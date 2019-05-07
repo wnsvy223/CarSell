@@ -24,6 +24,7 @@
     <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
     <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
   <![endif]-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
 <body>
@@ -93,8 +94,8 @@
                     <tr>
                         <th>번호</th>
                         <th class="text-center">제목</th>
-                        <th class="text-center">작성자</th>
-                        <th class="text-center">날짜</th>
+                        <th class="text-center">작성자</th>                      
+                        <th class="text-center">날짜</th>                     
                         <th class="text-center">조회수</th>
                     </tr>
                 </thead>
@@ -108,7 +109,7 @@
                     <% for(var i= 0; i<list; i++){ %>
                         <tr>
                             <td class="col-md-1"><%=rows[i].board_num %></td>
-                            <td class="col-md-6 text_reduction">
+                            <td class="col-md-5 text_reduction">
                               <span>
                                 <a style="color:black;" href="/board-free/detail?index=<%=rows[i].board_num %>&userProfile_w=<%=rows[i].userProfile %>&pageNum=<%=currentPageIdx %>">
                                   <%=rows[i].board_title %>
@@ -120,9 +121,17 @@
                               </span>
                             </td>
                         
-                            <td class="col-md-2">
-                                <img  class="img-circle margin-left margin-profile-right" width="25" height="25" alt="..." src= <%=rows[i].userProfile %>
-                                <a><%=rows[i].userId_w %></a>                        
+                            <td class="col-md-3">                       
+                                <div class="dropdown margin-left">  
+                                    <img  class="img-circle margin-left margin-profile-right" width="25" height="25" alt="..." src= <%=rows[i].userProfile %>
+                                    <a><%=rows[i].userId_w %></a>    
+                                    <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="caret"></span></a>      
+                                     <ul class="dropdown-menu">
+                                      <li><a href="">대화하기</a></li>
+                                      <li><a href="/board-free/showProfile?index=<%=rows[i].board_num %>">프로필 정보</a></li>
+                                      <li><a href="">게시글 보기</a></li>
+                                    </ul>
+                                </div>                          
                             </td>
                     
                             <td class="col-md-2 text-center">
@@ -141,7 +150,7 @@
             <div class="container">
               <form role="form" method="get" action="/board-free/write" enctype="application/x-www-form-urlencoded" >
                 <div class="form-group">
-                  <button class="btn blue pull-right">글쓰기</button>
+                  <button class="btn blue pull-right margin-profile-right">글쓰기</button>
                 </div>
               </form>
             </div>

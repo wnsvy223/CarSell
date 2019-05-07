@@ -52,16 +52,21 @@
 					<p class="col-md-12 text-center">E-mail : <%= email %></p>     
 				<% } %>
 				
-				<p class ="text-center">
-					<a class="btn btn-default">버튼 &raquo;</a>
-				</p>
+				<% if(!locals.func){ %> 
+					<p class ="text-center">
+						<a class="btn btn-default">내 게시글 &raquo;</a>					
+					</p>
+				<% }else{ %>
+					<p class ="text-center">
+						<a class="btn btn-default">게시글 보러가기 &raquo;</a>					
+					</p>
+				<% } %>
 			</div>
 		</div>
 	</div>
 
 
-
-	<!--테스트-->
+	<% if(!locals.func){ %> 
 	<div class="container">
 		<h1>프로필 편집</h1>						
 		<form action="/profile/edit" method="POST" role="form" enctype="application/x-www-form-urlencoded">	
@@ -96,9 +101,7 @@
 
 		</form>
 	</div>
-	<!--테스트-->
-
-
+	<% } %>
 
     <footer>
         <p>&copy; Company June</p>
