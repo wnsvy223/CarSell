@@ -83,7 +83,11 @@
       <div class="container">
         <div class="col-md-2"></div>
         <div class="col-md-8">
-            <h2 class="text-center">글 작성하기</h2><p></p>
+            <% if(func === 'write'){ %>   
+              <h2 class="text-center">글 작성하기</h2><p></p>
+            <% }else{ %>
+              <h2 class="text-center">글 수정하기</h2><p></p>
+            <% } %>
             <form role="form" method="POST" action="/board-free/write/commit" enctype="application/x-www-form-urlencoded" >   
                 <div class="table table-responsive">
                 <table class="table table-striped">
@@ -121,9 +125,15 @@
                           <input type="hidden" name="ref"  value="">
                           <input type="hidden" name="ref_step"  value="">
                           <input type="hidden" name="ref_level"  value="">                                  
-                          <input type="submit" value="완료" class="btn btn-success">                      
-                          <input type="reset" value="취소" class="btn btn-danger" onclick="location.href='/board-free'">
-                          <input type="button" value="전체글보기" class="btn btn-primary" onclick="location.href='/board-free'">
+                          <input type="submit" value="완료" class="btn green"> 
+
+                          <% if(func === 'write'){ %>             
+                            <a class="btn red" href="/board-free">취소</a>
+                            <a class="btn blue" href="/board-free">목록으로</a>
+                          <% }else{ %>
+                            <a class="btn red" href="/board-free/detail?index=<%=documentNum %>&userProfile_w=<%=profileImage %>&pageNum=<%=pageNum %>">취소</a>
+                            <a class="btn blue" href="/board-free/page/<%= pageNum %>">목록으로</a>
+                          <% } %>                                  
                     </td>
                     </tr>
                  

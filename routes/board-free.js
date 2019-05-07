@@ -7,6 +7,8 @@ var documentNum = 0; //게시물 번호값 받을 변수
 var profileImage_w = ''; // 게시물 작성자 프로필사진
 var pageNum = 0; // 게시물 포함된 페이지 번호    -> 3가지를 get detail 라우터를 통해 본문 진입시 받아옴. 
 var now = moment().format('YYYY-MM-DD HH:mm:ss:SSS');
+var documentTitle = '';
+var documentContent = '';
 
 // 게시판 메인 페이지
 router.get('/', function(req, res, next) {
@@ -113,7 +115,10 @@ router.get('/write', function(req, res, next){
         var renderParam = {
             email : req.session.email, 
             profileImage : req.session.userProfile, 
-            userId: req.session.userId
+            userId: req.session.userId,
+            func: 'write',
+            documentNum : documentNum, // 게시물 번호
+            pageNum : pageNum // 페이지 번호
         };
         res.render('board-free-write', renderParam);
     }  
@@ -213,6 +218,8 @@ router.get('/detail?:data_board_num', function(req, res, next){
                     if(err){
                         console.log('quey error'+err);
                     }else{     
+                        documentTitle = rows[0].board_title;
+                        documentContent = rows[0].content;
                         var select_reply = 'select board_reply.*, (select users.userProfile as userProfile_reply from users where board_reply.userId_reply = users.userId) userProfile_reply from board_reply where board_reply.board_num=?'
                         connection.query(select_reply, [documentNum], function(err, subrows, fields){
                             if(err){
@@ -280,9 +287,22 @@ router.get('/delete?:index', function(req, res, next){
 
 
 // 게시글 수정
-router.get('/update?:index', function(req, res, next){
-    console.log('수정');
-    res.redirect('/board-free');
+router.get('/update?:index', function(req, res, next){  
+    if(!req.session.email){
+        res.render('index'); // 세션이 끊긴 상태면 로그인 페이지로
+    }else{
+        var renderParam = {
+            email : req.session.email, 
+            profileImage : req.session.userProfile, 
+            userId: req.session.userId,
+            func: 'update',
+            documentNum : req.query.index, // 게시물 번호
+            pageNum : pageNum  // 페이지 번호
+        };
+        console.log('수정 : ' + JSON.stringify(renderParam));
+        res.render('board-free-write', renderParam);
+       
+    }  
 });
 
 module.exports = router;

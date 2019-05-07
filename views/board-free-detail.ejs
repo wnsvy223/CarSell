@@ -126,12 +126,12 @@
                                 <input type="hidden" name="ref"  value="">
                                 <input type="hidden" name="ref_step"  value="">
                                 <input type="hidden" name="ref_level"  value="">                                  
-                                <input type="submit" value="완료" class="btn btn-success">                           
-                                <input type="reset" value="취소" class="btn btn-danger" onclick="location.href='/board-free/page/<%= pageNum %>'">
-                                <input type="button" value="목록으로" class="btn btn-primary" onclick="location.href='/board-free/page/<%= pageNum %>'">
+                                <input type="submit" value="완료" class="btn green">                           
+                                <input type="reset" value="취소" class="btn red" onclick="location.href='/board-free/page/<%= pageNum %>'">
+                                <input type="button" value="목록으로" class="btn blue" onclick="location.href='/board-free/page/<%= pageNum %>'">
                                 <% if(userId === userId_w){ %> 
-                                  <input type="button" value="수정" class="btn" onclick="location.href='/board-free/update?index=<%=rows[0].board_num %>&pageNum=<%= pageNum %>'">
-                                  <input type="button" value="삭제" class="btn" onclick="location.href='/board-free/delete?index=<%=rows[0].board_num %>&pageNum=<%= pageNum %>'">                                                 
+                                  <input type="button" value="수정" class="btn yellow" onclick="location.href='/board-free/update?index=<%=rows[0].board_num %>&pageNum=<%= pageNum %>'">
+                                  <input type="button" value="삭제" class="btn yellow" onclick="location.href='/board-free/delete?index=<%=rows[0].board_num %>&pageNum=<%= pageNum %>'">                                                 
                                 <% } %> 
                             </td>
                         </tr>
@@ -153,7 +153,7 @@
                                   <% for(var i= 0; i<replyLength; i++){ %>
                                       <tr>
                                           <td class="col-md-2">
-                                            <img class="img-circle margin-profile-right" width="25" height="25" src= <%=reply[i].userProfile_reply %>
+                                            <img class="img-circle margin-profile-right" width="25" height="25" src= <%=reply[i].userProfile_reply %>>
                                             <small><%= reply[i].userId_reply %></small>
                                           </td>
                                           <td class="col-md-8">
