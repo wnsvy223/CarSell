@@ -22,7 +22,6 @@ router.get('/', function(req, res, next) {
   if(!req.session.email){
     res.render('index'); // 세션이 끊긴 상태면 로그인 페이지로
   }else{
-    console.log("프로필창" + JSON.stringify(req.session));
     res.render('profile',{email : req.session.email, profileImage : req.session.userProfile, userId: req.session.userId});
   }
 });
@@ -72,7 +71,9 @@ router.post('/edit_img', upload.single('edit_img'), function(req, res, next){
           var path = '/' + req.file.path;
           connection.query('update users set userProfile=? where email=?', [path, req.session.email], function (err, rows, fields) {
           if(!err){
-            removeFile(req.session.userProfile); // 기존 이미지를 삭제.
+            var sessionPath = req.session.userProfile;
+            var oldPath = sessionPath.substring(1);
+            removeFile(oldPath); // 기존 이미지를 삭제.
             req.session.userProfile = path; // 새 이미지 파일 경로를 세션정보에 넣어줌. 
             req.session.save(function(){  //세션값이 변경되면 save함수 호출해서 변경값을 세션테이블에 저장.
               res.redirect('/profile'); // 페이지 갱신
