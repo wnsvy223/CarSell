@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>채팅</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <style>
+        header { background-color: #563d7c }
+        h1 { color: #ffffff; font-weight: lighter; font-size: 1rem }
+        footer { background: #e9ecef }
+        .btn { font-weight: lighter }
+        .input-group-text { font-weight: lighter }
+        .form-control:focus { box-shadow: none; -webkit-box-shadow: none }
+        .list-group-item { border-width: 0 }
+        ::-webkit-input-placeholder { font-weight: lighter }
+        :-moz-placeholder { font-weight: lighter }
+        ::-moz-placeholder { font-weight: lighter }
+
+        .messages { padding: 3rem 0 }
+        .list-group-item { margin: 0 .5rem; padding: .25rem .5rem; border-width: 0 }
+        .message { display: flex; max-width: 80%; margin-top: 5px; padding: .5rem 1rem; border-radius: .5rem }
+        .msg-receive { float:left; background-color: #dedede }
+        .msg-receive:before { position: relative; top: -.5rem; left: -1.5rem; width: 0; height: 0; border-style: solid; border-width: 0 15px 15px 0; border-color: transparent #dedede transparent transparent; content: '' }
+        .msg-send { float: right; background-color: #efefef }
+        .msg-send:after { position: relative; top: -.5rem; left: 1.5rem; width: 0; height: 0; border-style: solid; border-width: 15px 15px 0 0; border-color: #efefef transparent transparent transparent; content: '' }
+    </style>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script>
+        $(function() {
+
+            // Socket.IO 서버에 접속
+            var socket = io();
+
+            // 서버의 'chat message' 이벤트 수신시 실행할 이벤트핸들러 등록
+            socket.on('chat message', function(data) {
+                console.log('프로필사진수신');
+                var $li = $('<li></li>').addClass('list-group-item');
+                var $span = $('<span></span>').addClass('message msg-receive');
+                $li.append($span.text(data));
+                $('div.messages ul').append($li);
+                $(document).scrollTop($(document).height());
+            });
+
+            // 서버의 'chat sended' 이벤트 수신시 실행할 이벤트핸들러 등록
+            socket.on('chat sended', function(data) {
+                var userId = "<%= userId %>"; // 메시지 보낸사람 아이디
+                var email = "<%= email %>"; // 메시지 보낸사람 이메일
+                var userProfile = "<%= userProfile %>"; // 메시지 보낸사람 프로필사진
+
+                console.log('송신자 정보' + email + ' / ' + userId + ' / ' + userProfile );
+                var $li = $('<li></li>').addClass('list-group-item');
+                var $span = $('<span></span>').addClass('message msg-send');
+                $li.append($span.text(data));
+                $('div.messages ul').append($li);
+                $(document).scrollTop($(document).height());
+            });
+
+            // [전송] 버튼을 클릭할 경우 실행할 이벤트핸들러 등록
+            $('form').submit(function(eve) {
+                eve.preventDefault();
+                var $fldMessage = $('input#message');
+                if ($fldMessage.val().trim().length < 1) {
+                    $fldMessage.val('');
+                    return;
+                }
+
+                socket.emit('chat message', $fldMessage.val());
+                $fldMessage.val('');
+            });
+
+        });
+</script>
+</head>
+
+<body>
+    <header class="fixed-top p-1">
+        <h1 class="mt-2 px-2">채팅</h1>
+    </header>
+    <div class="messages py-5">
+        <ul class="list-group list-group-flush px-2">
+
+        </ul>
+    </div>
+    <footer class="fixed-bottom p-1">
+        <form>
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <label for="message" class="input-group-text px-3">메시지</label>
+                </div>
+                <input type="text" id="message" autocomplete="off" placeholder="전송할 메시지를 입력해 주세요." class="form-control">
+                <div class="input-group-append">
+                    <input type="submit" value="전송" class="btn btn-primary px-4">
+                </div>
+            </div>
+        </form>
+    </footer>
+</body>
+
+</html>

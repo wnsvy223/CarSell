@@ -9,8 +9,10 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var profileRouter = require('./routes/profile');
 var board_free_Router = require('./routes/board-free');
+var chatRouter = require('./routes/chat');
 var app = express();
 
+app.io = require('socket.io')();
 var session = require('express-session');
 var MySQLStroe = require('express-mysql-session')(session);
 
@@ -50,8 +52,9 @@ app.use(session({
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/profile',profileRouter);
-app.use('/board-free',board_free_Router);
+app.use('/profile', profileRouter);
+app.use('/board-free', board_free_Router);
+app.use('/chat', chatRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -67,6 +70,33 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+});
+
+app.io.on('connection',function(socket){
+  console.log('- 클라이언트가 접속되었습니다.\n  socket.id: %s', socket.id);
+    
+  // 클라이언트 접속이 종료될 경우 실행할 이벤트핸들러 등록
+    socket.on('disconnect', function() {
+      console.log('- 클라이언트 접속이 종료되었습니다.\n  socket.id: %s', socket.id);
+  });
+
+   // 클라이언트의 'chat message' 이벤트 수신시 실행할 이벤트핸들러 등록
+   socket.on('chat message', function(data) {
+    console.log('- 메시지: %s > %s', socket.id, data);
+
+    // 접속된 모든 클라이언트에게 메시지 전달
+    //io.emit('chat message', data);
+
+    // 메시지를 전송한 클라이언트를 제외한 모든 클라이언트에게 메시지 전달
+    socket.broadcast.emit('chat message', data);
+
+    // 메시지를 전송한 클라이언트에게 메시지 전달
+    socket.emit('chat sended', data);
+
+    // 특정 클라이언트에게만 메시지 전달
+    //io.to(userSocketID).emit('chat message', data);
+});
+
 });
 
 module.exports = app;
