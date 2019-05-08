@@ -54,10 +54,11 @@ router.get('/page/:idx', function(req, res, next){
             if(err){
                 console.log('connection pool error'+err);
             }else{
+                pageNum = req.params.idx;
                 var queryAll = 'select board.*,users.userProfile,(select count(*) as reply_count from board_reply where board.board_num = board_reply.board_num) reply_count from board inner join users on users.userId = board.userId_w order by board.board_num desc';
                 connection.query(queryAll, function(err, totalRows, fields){
                     var totalList = totalRows.length;        // 전체 게시물 수
-                    var currentPage = parseInt(req.params.idx)  * 10;   // 페이지번호 * 10 = 게시물 인덱스값  
+                    var currentPage = parseInt(pageNum)  * 10;   // 페이지번호 * 10 = 게시물 인덱스값  
                     if(currentPage < 0 || currentPage > totalList){
                         res.send('<script type="text/javascript">alert("더 이상 글이 없습니다.");</script>');
                     }else{ 
