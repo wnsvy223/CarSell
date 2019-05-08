@@ -24,10 +24,11 @@
         .msg-receive:before { position: relative; top: -.5rem; left: -1.5rem; width: 0; height: 0; border-style: solid; border-width: 0 15px 15px 0; border-color: transparent #dedede transparent transparent; content: '' }
         .msg-send { float: right; background-color: #efefef }
         .msg-send:after { position: relative; top: -.5rem; left: 1.5rem; width: 0; height: 0; border-style: solid; border-width: 15px 15px 0 0; border-color: #efefef transparent transparent transparent; content: '' }
+        .profile-send{ float: right; width: 40px; height: 40px; border-radius: 50%; margin: 5px;}
     </style>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script>
+    <script type="text/javascript">
         $(function() {
 
             // Socket.IO 서버에 접속
@@ -52,7 +53,9 @@
                 console.log('송신자 정보' + email + ' / ' + userId + ' / ' + userProfile );
                 var $li = $('<li></li>').addClass('list-group-item');
                 var $span = $('<span></span>').addClass('message msg-send');
+                var $img = $('<img></img>').addClass('profile-send');
                 $li.append($span.text(data));
+                $li.append($img.attr('src', userProfile)); // 채팅창에 프로필 이미지 + 메시지 세팅
                 $('div.messages ul').append($li);
                 $(document).scrollTop($(document).height());
             });
