@@ -30,10 +30,8 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script type="text/javascript">
         $(function() {
-
             // Socket.IO 서버에 접속
             var socket = io();
-
             // 서버의 'chat message' 이벤트 수신시 실행할 이벤트핸들러 등록
             socket.on('chat message', function(data) {
                 console.log('프로필사진수신');
@@ -49,8 +47,7 @@
                 var userId = "<%= userId %>"; // 메시지 보낸사람 아이디
                 var email = "<%= email %>"; // 메시지 보낸사람 이메일
                 var userProfile = "<%= userProfile %>"; // 메시지 보낸사람 프로필사진
-
-                console.log('송신자 정보' + email + ' / ' + userId + ' / ' + userProfile );
+                console.log('송신자 정보' + email + ' / ' + userId + ' / ' + userProfile);
                 var $li = $('<li></li>').addClass('list-group-item');
                 var $span = $('<span></span>').addClass('message msg-send');
                 var $img = $('<img></img>').addClass('profile-send');

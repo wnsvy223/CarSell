@@ -312,6 +312,7 @@ router.get('/update?:index', function(req, res, next){
                         };
                         console.log('수정 : ' + JSON.stringify(renderParam));
                         res.render('board-free-write', renderParam);
+                        connection.release(); 
                     }
                 });   
                 
@@ -374,6 +375,7 @@ router.get('/showProfile', function(req, res, next){
                             func : 'showProfile'
                         };
                         res.render('profile',params);
+                        connection.release();
                     }
                 });   
             }
