@@ -1,11 +1,13 @@
 var express = require('express');
 var mysqlDB = require('../mysqlDB');
-var sessionEmail = ''; // 전역변수로 잡고 채팅화면으로 라우팅될때 세션에 저장된 email 받아옴.
+var sessionEmail = ''; // 채팅화면으로 라우팅될때 세션에 저장된 email 받아 올 전역변수.
+var roomname = ''; // 채팅화면으로 라우팅될때 쿼리스트링으로부터 받아 올 roomname 전역변수.
 
 module.exports = function(io){
   var router = express.Router();
   router.get('/', function(req, res, next) {
     if(req.session.email){
+      roomname = req.query.room; // 게시물 번호를 방이름으로
       sessionEmail = req.session.email;
       var email = req.session.email;
       var userId = req.session.userId;
@@ -24,10 +26,12 @@ module.exports = function(io){
   });
 
   io.on('connection',function(socket){
-    var cookies = socket.handshake.headers.cookie;; // 접속유저의 아이피 주소
+    var room = roomname;  // 라우터로부터 받아온 방이름(게시물 번호)
+    socket.join(room); // 방 참가
+    var cookies = socket.handshake.headers.cookie;; // 접속유저의 소켓 세션 아이디
     console.log('- 클라이언트가 접속되었습니다.\n  socket.id: %s', socket.id);
-    console.log(' 소켓 SID : ' + cookies);
-    
+    //console.log(' 소켓 SID : ' + cookies);
+    console.log('방이름(소켓) : ' + room);
     // 소켓 연결되면 연결 요청한 사용자의 socket id를 DB에 저장
     mysqlDB.getConnection(function(err, connection){
       if(err){
@@ -38,7 +42,7 @@ module.exports = function(io){
             if(err){
               console.log('quey error'+err);
             }else{      
-              console.log('소켓아이디 DB 입력' + socket.id + sessionEmail);;
+              console.log('소켓아이디 DB 입력' + socket.id +' / ' +sessionEmail);;
               connection.release();
             }
         });   
@@ -47,24 +51,45 @@ module.exports = function(io){
 
     // 클라이언트 접속이 종료될 경우 실행할 이벤트핸들러 등록
       socket.on('disconnect', function() {
+        socket.leave(room); // 방 나감
         console.log('- 클라이언트 접속이 종료되었습니다.\n  socket.id: %s', socket.id);
     });
 
     // 클라이언트의 'chat message' 이벤트 수신시 실행할 이벤트핸들러 등록
-    socket.on('chat message', function(data) {
-      console.log('- 메시지: %s > %s', socket.id, data);
+      socket.on('chat message', function(data) {
+        console.log('- 메시지: %s > %s', socket.id, data);
+        // 접속된 모든 클라이언트에게 메시지 전달
+        //io.emit('chat message', data);
 
-      // 접속된 모든 클라이언트에게 메시지 전달
-      //io.emit('chat message', data);
+        // 메시지를 전송한 클라이언트를 제외한 모든 클라이언트에게 메시지 전달
+        //socket.broadcast.emit('chat message', data);
 
-      // 메시지를 전송한 클라이언트를 제외한 모든 클라이언트에게 메시지 전달
-      socket.broadcast.emit('chat message', data);
+        // 메시지를 전송한 클라이언트에게 메시지 전달
+        //socket.emit('chat sended', data);
 
-      // 메시지를 전송한 클라이언트에게 메시지 전달
-      socket.emit('chat sended', data);
+        // 특정 클라이언트에게만 메시지 전달
+        //io.to(userSocketID).emit('chat message', data);
 
-      // 특정 클라이언트에게만 메시지 전달
-      //io.to(userSocketID).emit('chat message', data);
+        mysqlDB.getConnection(function(err, connection){
+          if(err){
+              console.log('connection pool error'+err);
+          }else{
+            var query = 'select userProfile from users where socketId=?';   // 소켓아이디로 부터 프로필사진 url 조회 
+            connection.query(query, [socket.id], function(err, rows, fields){
+                if(err){
+                  console.log('quey error'+err);
+                }else{      
+                  console.log('소켓아이디로부터 추출한 프로필사진 : ' + rows[0].userProfile);   
+                  var profileImg = rows[0].userProfile;            
+                  socket.broadcast.to(room).emit('chat message', data, profileImg); // 나를 제외한 룸 내의 모든 클라이언트에게 메시지
+                  socket.emit('chat sended', data);; // 내 메시지
+                  connection.release();
+                }
+            });   
+          }
+        }); 
+
+       
     });
 
   });
