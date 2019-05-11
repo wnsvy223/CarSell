@@ -58,30 +58,23 @@ module.exports = function(io){
     // 클라이언트의 'chat message' 이벤트 수신시 실행할 이벤트핸들러 등록
       socket.on('chat message', function(data) {
         console.log('- 메시지: %s > %s', socket.id, data);
-        // 접속된 모든 클라이언트에게 메시지 전달
-        //io.emit('chat message', data);
-
-        // 메시지를 전송한 클라이언트를 제외한 모든 클라이언트에게 메시지 전달
-        //socket.broadcast.emit('chat message', data);
-
-        // 메시지를 전송한 클라이언트에게 메시지 전달
-        //socket.emit('chat sended', data);
-
-        // 특정 클라이언트에게만 메시지 전달
-        //io.to(userSocketID).emit('chat message', data);
 
         mysqlDB.getConnection(function(err, connection){
           if(err){
               console.log('connection pool error'+err);
           }else{
-            var query = 'select userProfile from users where socketId=?';   // 소켓아이디로 부터 프로필사진 url 조회 
+            var query = 'select userProfile, userId from users where socketId=?';   // 소켓아이디로 부터 프로필사진 url 조회 
             connection.query(query, [socket.id], function(err, rows, fields){
                 if(err){
                   console.log('quey error'+err);
-                }else{      
-                  console.log('소켓아이디로부터 추출한 프로필사진 : ' + rows[0].userProfile);   
-                  var profileImg = rows[0].userProfile;            
-                  socket.broadcast.to(room).emit('chat message', data, profileImg); // 나를 제외한 룸 내의 모든 클라이언트에게 메시지
+                }else{       
+                  var profileImg = rows[0].userProfile;
+                  var userId = rows[0].userId;       
+                  var params = {
+                    profileImg : profileImg,
+                    userId : userId
+                  }     
+                  socket.broadcast.to(room).emit('chat message', data, params); // 나를 제외한 룸 내의 모든 클라이언트에게 메시지
                   socket.emit('chat sended', data);; // 내 메시지
                   connection.release();
                 }

@@ -33,15 +33,17 @@
         $(function() {
             // Socket.IO 서버에 접속
             var socket = io();
-            // 서버의 'chat message' 이벤트 수신시 실행할 이벤트핸들러 등록
-            
-            socket.on('chat message', function(data, profileImg) {
-                console.log('프로필사진수신');
+            // 서버의 'chat message' 이벤트 수신시 실행할 이벤트핸들러 등록          
+            socket.on('chat message', function(data, params) {
+                var $li_userId = $('<li></li>').addClass('list-group-item');
+                var $span_userId = $('<a></a>');
+                $li_userId.append($span_userId.text(params.userId));
+                $('div.messages ul').append($li_userId);
                 var $li = $('<li></li>').addClass('list-group-item');
                 var $span = $('<span></span>').addClass('message msg-receive');
                 var $img = $('<img></img>').addClass('profile-receive');
+                $li.append($img.attr('src', params.profileImg)); // 소켓아이디로 부터 조회된 채팅방내의 다른 유저의 프로필 사진
                 $li.append($span.text(data));
-                $li.append($img.attr('src', profileImg)); 
                 $('div.messages ul').append($li);
                 $(document).scrollTop($(document).height());
             });
@@ -50,13 +52,12 @@
             socket.on('chat sended', function(data, sessionEmail) {
                 var userId = "<%= userId %>"; // 메시지 보낸사람 아이디
                 var email = "<%= email %>"; // 메시지 보낸사람 이메일
-                var userProfile = "<%= userProfile %>"; // 메시지 보낸사람 프로필사진
-                console.log('송신자 정보' + email + ' / ' + userId + ' / ' + userProfile);        
+                var userProfile = "<%= userProfile %>"; // 메시지 보낸사람 프로필사진       
                 var $li = $('<li></li>').addClass('list-group-item');
                 var $span = $('<span></span>').addClass('message msg-send');
                 var $img = $('<img></img>').addClass('profile-send');
-                $li.append($span.text(data));
-                $li.append($img.attr('src', userProfile)); // 채팅창에 프로필 이미지 + 메시지 세팅
+                $li.append($img.attr('src', userProfile)); // 세션에 저장된 메시지 송신자의 프로필 사진
+                $li.append($span.text(data));       
                 $('div.messages ul').append($li);
                 $(document).scrollTop($(document).height());           
             });
