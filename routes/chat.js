@@ -1,7 +1,9 @@
 var express = require('express');
 var mysqlDB = require('../mysqlDB');
-var sessionEmail = ''; // 채팅화면으로 라우팅될때 세션에 저장된 email 받아 올 전역변수.
 var roomname = ''; // 채팅화면으로 라우팅될때 쿼리스트링으로부터 받아 올 roomname 전역변수.
+var sessionEmail = ''; // 채팅화면으로 라우팅될때 세션에 저장된 email 받아 올 전역변수.
+var sessionUserId = ''; // 채팅화면으로 라우팅될때 세션에 저장된 userId 받아 올 전역변수.
+var moment = require('moment');
 
 module.exports = function(io){
   var router = express.Router();
@@ -9,13 +11,12 @@ module.exports = function(io){
     if(req.session.email){
       roomname = req.query.room; // 게시물 번호를 방이름으로
       sessionEmail = req.session.email;
-      var email = req.session.email;
-      var userId = req.session.userId;
+      sessionUserId = req.session.userId;
       var sessionProfile = req.session.userProfile;
       var userProfile = sessionProfile.replace(/\\/g,'/'); // 경로기호 escape 문자열 replace로 바꿔서 보냄
       var params = {
-        email : email,
-        userId : userId,
+        email : sessionEmail,
+        userId : sessionUserId,
         userProfile : userProfile,
       }     
       res.render('chat', params);
@@ -49,9 +50,33 @@ module.exports = function(io){
       }
     }); 
 
+     // 소켓 연결되면 chat-list 테이블에 정보 저장
+    getVisits(function(err, rows){
+      if(!err){
+        console.log('방문자 아이디 : ' + rows[0].userId_w);
+        mysqlDB.getConnection(function(err, connection){
+          if(err){
+              console.log('connection pool error'+err);
+          }else{
+            var now = moment().format('YYYY-MM-DD HH:mm:ss:SSS');
+            var query = 'insert into chat_list (owner, visit, roomName, timeStamp_chat) values (?,?,?,?)';
+            // (owner, visit, roomName, timeStamp)        
+            connection.query(query, [sessionUserId, rows[0].userId_w, roomname, now], function(err, rows, fields){
+                if(err){
+                  console.log('quey error'+err);
+                }else{      
+                  connection.release();
+                }
+            });   
+          }
+        }); 
+      }
+    });
+   
     // 클라이언트 접속이 종료될 경우 실행할 이벤트핸들러 등록
       socket.on('disconnect', function() {
         socket.leave(room); // 방 나감
+        //exitRoom(room); // DB 대화 기록 삭제
         console.log('- 클라이언트 접속이 종료되었습니다.\n  socket.id: %s', socket.id);
     });
 
@@ -80,12 +105,80 @@ module.exports = function(io){
                 }
             });   
           }
-        }); 
-
-       
+        });       
     });
+  });
 
+  // 대화목록 라우터
+  router.get('/list',function(req, res, next){ 
+    if(!req.session.email){
+      res.render('index'); // 세션이 끊긴 상태면 로그인 페이지로
+    }else{   
+      mysqlDB.getConnection(function(err, connection){
+        if(err){
+            console.log('connection pool error'+err);
+        }else{
+          var query = 'select * from chat_list';        
+          connection.query(query, function(err, rows, fields){
+              if(err){
+                console.log('quey error'+err);
+              }else{      
+                var params = {
+                  email : req.session.email, 
+                  profileImage : req.session.userProfile, 
+                  userId : req.session.userId,
+                  rows : rows,
+                  moment : moment
+                };                
+                console.log('대화목록 쿼리 : ' + JSON.stringify(rows));
+                res.render('chat-list', params);
+                connection.release();
+              }
+          });   
+        }
+      });
+      
+    }    
   });
 
   return router;
+}
+
+// 대화상대 조회
+function getVisits(callback){
+    mysqlDB.getConnection(function(err, connection){
+      if(err){
+          console.log('connection pool error'+err);
+      }else{
+        var query = 'select userId_w from board where board.board_num = ?'; 
+        connection.query(query, [roomname], function(err, rows, fields){
+            if(err){
+              console.log('quey error'+err);
+            }else{             
+              console.log('아이디 : ' + JSON.stringify(rows));  
+              return callback(err, rows);        
+            }
+            connection.release();
+        });   
+      }
+  }); 
+}
+
+// 대화방에 상대가 나갔을 경우 대화 기록이 필요 없으므로 DB에서 삭제하기 위한 함수
+function exitRoom(roomName){  
+  mysqlDB.getConnection(function(err, connection){
+    if(err){
+        console.log('connection pool error'+err);
+    }else{
+      var query = 'delete from chat_list where roomName=?'; 
+      connection.query(query, [roomName], function(err, rows, fields){
+          if(err){
+            console.log('quey error'+err);
+          }else{                        
+            console.log('채팅방 기록 삭제'+ JSON.stringify(rows));
+          }
+          connection.release();
+      });   
+    }
+}); 
 }

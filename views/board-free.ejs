@@ -51,7 +51,8 @@
                   <ul class="dropdown-menu" role="menu">
                     <li><a href="/board-free">자유 게시판</a></li>
                     <li><a href="#">거래 게시판<a></li>
-                    <li><a href="#">내 게시물</a></li>            
+                    <li><a href="#">내 게시물</a></li>    
+                    <li><a href="/chat/list">내 대화목록</a></li>        
                   </ul>
                 </li>                  
                 <li class="dropdown">
@@ -106,6 +107,9 @@
                       border-radius: 15px;
                     }
                   </style>
+                  <% if(rows.length === 0){ %>         
+                    <td class="col-md-5 text_reduction">게시글이 없습니다.</td>           
+                  <% } else { %>
                     <% for(var i= 0; i<list; i++){ %>
                         <tr>
                             <td class="col-md-1"><%=rows[i].board_num %></td>
@@ -143,7 +147,7 @@
                             </td>
                         </tr>
                     <% } %>         
-
+                  <% } %>  
                 </tbody>
             </table>
             <!-- <a class="btn btn-default pull-right" href="/board-free/write">글쓰기</a> -->
