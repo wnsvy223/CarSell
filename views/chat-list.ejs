@@ -25,6 +25,15 @@
     <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
   <![endif]-->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" type="text/css" rel="stylesheet">
+  <script>
+    $(document).ready(function(){
+        $("#chat_list").click(function(){
+        console.log('클릭이벤트');
+      });
+    }); 
+  </script>
+
 </head>
 
 <body>
@@ -85,43 +94,39 @@
         </nav>
     </div>
     <!-- ======================== NavBar ========================== -->
-  
-    <!-- Board List-->
-    <div class="row margin-top">
-      <div class="container">
-          <table class="table table-striped">      
-            
-              <thead> <!-- 게시판 테이블 헤더부분-->
-                <tr>
-                    <th class="col-md-1">Owner</th>
-                    <th class="col-md-2 text_reduction">Visit</th>                      
-                    <th class="col-md-5 text-center">RoomName</th>                     
-                    <th class="col-md-2 text-center">TimeStamp</th>
-                </tr>
-              </thead>
 
-              <tbody> <!-- 대화방 목록 테이블 본문부분--> 
-                <% if(rows.length === 0){ %>         
-                    <td class="col-md-5 text_reduction">대화 목록이 없습니다.</td>                      
-                <% } else { %>
-                  <% for(var i= 0; i<rows.length; i++){ %>
-                        <tr>
-                            <td class="col-md-1"><%=rows[i].owner %></td>
-                            <td class="col-md-2 text_reduction"><%=rows[i].visit %></td>
-                            <td class="col-md-5 text-center">
-                              <a href="/chat?room=<%=rows[i].roomName %>"><%=rows[i].roomName %></a>
-                            </td>                    
-                            <td class="col-md-2 text-center"><%=moment(rows[i].timeStamp_chat).format('YYYY-MM-DD HH:mm:ss') %></td>                                                                    
-                        </tr>         
-                  <% } %>  
-                <% } %>  
-              </tbody>
-          </table>
-  
-      </div>
+  <div class="row margin-top">
+    <h2 class="text-center">채팅목록</h2>
+    <div class="container">
+        <div id="chat_list" class="messaging">            
+          <% if(rows.length === 0){ %> 
+            <div  class="chat_list">        
+              <a class="col-md-5 text_reduction">대화 목록이 없습니다.</a>
+            </div>                      
+          <% } else { %>
+            <% for(var i= 0; i<rows.length; i++){ %>
+            <div  class="chat_list" OnClick="location.href ='/chat?room=<%=rows[i].roomName %>'">
+                <div class="chat_people">
+                  <div class="chat_img col-md-1"> <img class="img-circle" src="https://ptetutorials.com/images/user-profile.png"> </div>
+                  <div class="chat_ib col-md-11">
+                    <h5><%=rows[i].visit %> 
+                      <span class="chat_date">
+                          <%=moment(rows[i].timeStamp_chat).format('YYYY-MM-DD HH:mm:ss') %>
+                      </span>
+                    </h5>
+                    <p>메시지</p>
+                  </div>
+                  <div>
+                    
+                  </div>
+              </div>
+            </div>
+            <% } %>  
+          <% } %> 
+    </div>
   </div>
-  <!-- Board List-->
-  
+</div>
+
     <!-- FOOTER -->
     <footer>
         <p class="pull-right"><a href="#">Back to top</a></p>

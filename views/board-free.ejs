@@ -72,9 +72,9 @@
               </ul>           
                 <form>                          
                   <% if(locals.profileImage){ %>                        
-                    <img  class="img-circle navbar-right" width="45" height="45" alt="..." src= <%= profileImage %> <!--서버 저장된 이미지-->                                                    
+                    <img  class="img-circle navbar-right"  alt="..." src= <%= profileImage %> <!--서버 저장된 이미지-->                                                    
                   <% }else{ %>
-                    <img  class="img-circle navbar-right" width="45" height="45" alt="..." src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" %> <!--빈 화면-->
+                    <img  class="img-circle navbar-right"  alt="..." src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" %> <!--빈 화면-->
                   <% } %>                  
                   <% if(locals.userId){ %>
                     <p class="white-text navbar-right"><%= userId %></p>     
