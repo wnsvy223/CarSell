@@ -89,7 +89,17 @@
     <!-- Board List-->
     <div class="row margin-top">
       <div class="container">
-          <table class="table table-striped">            
+          <table class="table table-striped">      
+            
+              <thead> <!-- 게시판 테이블 헤더부분-->
+                <tr>
+                    <th class="col-md-1">Owner</th>
+                    <th class="col-md-2 text_reduction">Visit</th>                      
+                    <th class="col-md-5 text-center">RoomName</th>                     
+                    <th class="col-md-2 text-center">TimeStamp</th>
+                </tr>
+              </thead>
+
               <tbody> <!-- 대화방 목록 테이블 본문부분--> 
                 <% if(rows.length === 0){ %>         
                     <td class="col-md-5 text_reduction">대화 목록이 없습니다.</td>                      
@@ -97,8 +107,10 @@
                   <% for(var i= 0; i<rows.length; i++){ %>
                         <tr>
                             <td class="col-md-1"><%=rows[i].owner %></td>
-                            <td class="col-md-5 text_reduction"><%=rows[i].visit %></td>
-                            <td class="col-md-2"><%=rows[i].roomName %></td>                    
+                            <td class="col-md-2 text_reduction"><%=rows[i].visit %></td>
+                            <td class="col-md-5 text-center">
+                              <a href="/chat?room=<%=rows[i].roomName %>"><%=rows[i].roomName %></a>
+                            </td>                    
                             <td class="col-md-2 text-center"><%=moment(rows[i].timeStamp_chat).format('YYYY-MM-DD HH:mm:ss') %></td>                                                                    
                         </tr>         
                   <% } %>  

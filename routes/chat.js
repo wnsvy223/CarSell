@@ -29,7 +29,7 @@ module.exports = function(io){
   io.on('connection',function(socket){
     var room = roomname;  // 라우터로부터 받아온 방이름(게시물 번호)
     socket.join(room); // 방 참가
-    var cookies = socket.handshake.headers.cookie;; // 접속유저의 소켓 세션 아이디
+    //var cookies = socket.handshake.headers.cookie;; // 접속유저의 소켓 세션 아이디
     console.log('- 클라이언트가 접속되었습니다.\n  socket.id: %s', socket.id);
     //console.log(' 소켓 SID : ' + cookies);
     console.log('방이름(소켓) : ' + room);
@@ -43,7 +43,7 @@ module.exports = function(io){
             if(err){
               console.log('quey error'+err);
             }else{      
-              console.log('소켓아이디 DB 입력' + socket.id +' / ' +sessionEmail);;
+              console.log('소켓아이디 DB 입력' + socket.id +' / ' +sessionEmail);;       
               connection.release();
             }
         });   
@@ -59,9 +59,9 @@ module.exports = function(io){
               console.log('connection pool error'+err);
           }else{
             var now = moment().format('YYYY-MM-DD HH:mm:ss:SSS');
-            var query = 'insert into chat_list (owner, visit, roomName, timeStamp_chat) values (?,?,?,?)';
-            // (owner, visit, roomName, timeStamp)        
-            connection.query(query, [sessionUserId, rows[0].userId_w, roomname, now], function(err, rows, fields){
+            // 소켓 연결시 해당 번호로 채팅방이 존재하지 않을 경우만 테이블에 추가
+            var query = 'insert into chat_list (owner, visit, roomName, timeStamp_chat) select ?,?,?,? from dual where not exists (select roomName from chat_list where roomName=?)';       
+            connection.query(query, [sessionUserId, rows[0].userId_w, roomname, now, roomname], function(err, rows, fields){
                 if(err){
                   console.log('quey error'+err);
                 }else{      
@@ -72,7 +72,7 @@ module.exports = function(io){
         }); 
       }
     });
-   
+
     // 클라이언트 접속이 종료될 경우 실행할 이벤트핸들러 등록
       socket.on('disconnect', function() {
         socket.leave(room); // 방 나감
