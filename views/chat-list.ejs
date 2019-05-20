@@ -26,14 +26,6 @@
   <![endif]-->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" type="text/css" rel="stylesheet">
-  <script>
-    $(document).ready(function(){
-        $("#chat_list").click(function(){
-        console.log('클릭이벤트');
-      });
-    }); 
-  </script>
-
 </head>
 
 <body>
@@ -96,7 +88,7 @@
     <!-- ======================== NavBar ========================== -->
 
   <div class="row margin-top">
-    <h2 class="text-center">채팅목록</h2>
+    <h2 class="text-center">내 대화목록</h2>
     <div class="container">
         <div id="chat_list" class="messaging">            
           <% if(rows.length === 0){ %> 
@@ -105,22 +97,22 @@
             </div>                      
           <% } else { %>
             <% for(var i= 0; i<rows.length; i++){ %>
-            <div  class="chat_list" OnClick="location.href ='/chat?room=<%=rows[i].roomName %>'">
-                <div class="chat_people">
-                  <div class="chat_img col-md-1"> <img class="img-circle" src="https://ptetutorials.com/images/user-profile.png"> </div>
-                  <div class="chat_ib col-md-11">
-                    <h5><%=rows[i].visit %> 
-                      <span class="chat_date">
-                          <%=moment(rows[i].timeStamp_chat).format('YYYY-MM-DD HH:mm:ss') %>
-                      </span>
-                    </h5>
-                    <p>메시지</p>
-                  </div>
-                  <div>
-                    
-                  </div>
-              </div>
-            </div>
+            <div>           
+                <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div> 
+            <div  class="chat_list">
+              <div class="chat_people col-md-11" OnClick="location.href ='/chat?room=<%=rows[i].roomName %>'">
+                <div class="chat_img col-md-1"> <img class="img-circle" src=<%=rows[i].ownerProfile %>> </div>
+                <div class="chat_ib col-md-11">
+                  <h5><%=rows[i].visit %> 
+                    <span class="chat_date">
+                        <%=moment(rows[i].timeStamp_chat).format('YYYY-MM-DD HH:mm:ss') %>
+                    </span>
+                  </h5>
+                  <p>메시지</p>
+                </div>       
+              </div>               
+            </div>                               
             <% } %>  
           <% } %> 
     </div>

@@ -14,12 +14,29 @@ module.exports = function(io){
       sessionUserId = req.session.userId;
       var sessionProfile = req.session.userProfile;
       var userProfile = sessionProfile.replace(/\\/g,'/'); // 경로기호 escape 문자열 replace로 바꿔서 보냄
-      var params = {
-        email : sessionEmail,
-        userId : sessionUserId,
-        userProfile : userProfile,
-      }     
-      res.render('chat', params);
+     
+      mysqlDB.getConnection(function(err, connection){
+        if(err){
+            console.log('connection pool error'+err);
+        }else{
+          var query = 'SELECT chat_content.*,(select users.userProfile as thumnail from users where users.userId = chat_content.userId) thumnail from chat_content inner join users on users.userId = chat_content.userId where roomName=?';    
+          connection.query(query, [roomname], function(err, rows, fields){
+              if(err){
+                console.log('quey error'+err);
+              }else{    
+                var params = {
+                  sessionEmail : sessionEmail,
+                  sessionUserId : sessionUserId,
+                  userProfile : userProfile,
+                  rows : rows
+                }    
+                console.log('대화내용 : ' + JSON.stringify(params.rows));
+                res.render('chat', params);      
+                connection.release();
+              }
+          });   
+        }
+      });    
     }else{
       console.log("세션이 끊어짐");    
       res.render('index');
@@ -84,6 +101,8 @@ module.exports = function(io){
       socket.on('chat message', function(data) {
         console.log('- 메시지: %s > %s', socket.id, data);
 
+        var now = moment().format('YYYY-MM-DD HH:mm:ss:SSS');
+        socket.emit('chat sended', data);; // 내 메시지
         mysqlDB.getConnection(function(err, connection){
           if(err){
               console.log('connection pool error'+err);
@@ -99,13 +118,13 @@ module.exports = function(io){
                     profileImg : profileImg,
                     userId : userId
                   }     
-                  socket.broadcast.to(room).emit('chat message', data, params); // 나를 제외한 룸 내의 모든 클라이언트에게 메시지
-                  socket.emit('chat sended', data);; // 내 메시지
+                  socket.broadcast.to(room).emit('chat message', data, params); // 나를 제외한 룸 내의 모든 클라이언트에게 메시지              
+                  saveMessage(params.userId,data,room,now);
                   connection.release();
                 }
             });   
           }
-        });       
+        });          
     });
   });
 
@@ -118,8 +137,9 @@ module.exports = function(io){
         if(err){
             console.log('connection pool error'+err);
         }else{
-          var query = 'select * from chat_list';        
-          connection.query(query, function(err, rows, fields){
+          var query = 'select chat_list.*,(select users.userProfile as ownerProfile from users where users.userId = chat_list.visit) ownerProfile from chat_list inner join users on users.userId = chat_list.owner where owner=? or visit=? order by chat_list.timeStamp_chat desc';
+          // 로그인한 유저가 참여한 대화목록만 조회        
+          connection.query(query,[req.session.userId, req.session.userId], function(err, rows, fields){
               if(err){
                 console.log('quey error'+err);
               }else{      
@@ -130,7 +150,6 @@ module.exports = function(io){
                   rows : rows,
                   moment : moment
                 };                
-                console.log('대화목록 쿼리 : ' + JSON.stringify(rows));
                 res.render('chat-list', params);
                 connection.release();
               }
@@ -142,6 +161,23 @@ module.exports = function(io){
   });
 
   return router;
+}
+
+function saveMessage(userId, message, roomName, timeStamp_chat){
+  mysqlDB.getConnection(function(err, connection){
+    if(err){
+        console.log('connection pool error'+err);
+    }else{
+      var query = 'insert into chat_content (userId, message, roomName, timeStamp_chat) values (?,?,?,?)';   // 소켓아이디로 부터 프로필사진 url 조회 
+      connection.query(query, [userId, message, roomName, timeStamp_chat], function(err, rows, fields){
+          if(err){
+            console.log('quey error'+err);
+          }else{       
+            connection.release();
+          }
+      });   
+    }
+  });       
 }
 
 // 대화상대 조회
@@ -180,5 +216,5 @@ function exitRoom(roomName){
           connection.release();
       });   
     }
-}); 
+  }); 
 }

@@ -33,10 +33,11 @@
         $(function() {
             // Socket.IO 서버에 접속
             var socket = io();
+            $(document).scrollTop($(document).height()); // 스크롤 맨 아래로
             // 서버의 'chat message' 이벤트 수신시 실행할 이벤트핸들러 등록          
             socket.on('chat message', function(data, params) {
                 var $li_userId = $('<li></li>').addClass('list-group-item');
-                var $span_userId = $('<a></a>');
+                var $span_userId = $('<span></span>');
                 $li_userId.append($span_userId.text(params.userId));
                 $('div.messages ul').append($li_userId);
                 var $li = $('<li></li>').addClass('list-group-item');
@@ -50,8 +51,6 @@
             
             // 서버의 'chat sended' 이벤트 수신시 실행할 이벤트핸들러 등록
             socket.on('chat sended', function(data, sessionEmail) {
-                var userId = "<%= userId %>"; // 메시지 보낸사람 아이디
-                var email = "<%= email %>"; // 메시지 보낸사람 이메일
                 var userProfile = "<%= userProfile %>"; // 메시지 보낸사람 프로필사진       
                 var $li = $('<li></li>').addClass('list-group-item');
                 var $span = $('<span></span>').addClass('message msg-send');
@@ -74,7 +73,6 @@
                 socket.emit('chat message', $fldMessage.val());
                 $fldMessage.val('');
             });
-
         });
 </script>
 </head>
@@ -85,7 +83,22 @@
     </header>
     <div class="messages py-5">
         <ul class="list-group list-group-flush px-2">
-
+            <% for(var i=0; i<rows.length; i++){ %>
+               
+                    <% if(sessionUserId === rows[i].userId){ %>
+                    <li class="list-group-item">
+                        <img class="profile-send" src=<%= rows[i].thumnail %>>
+                        <span class="message msg-send"><%= rows[i].message %></span>
+                    </li>
+                    <% } else {%>
+                    <span><%= rows[i].userId %></span>
+                    <li class="list-group-item">
+                        <img class="profile-receive" src=<%= rows[i].thumnail %>>
+                        <span class="message msg-receive"><%= rows[i].message %></span>
+                    </li>
+                    <% } %>
+                
+            <% } %>
         </ul>
     </div>
     <footer class="fixed-bottom p-1">
