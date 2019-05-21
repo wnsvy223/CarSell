@@ -82,10 +82,9 @@
         <h1 class="mt-2 px-2">채팅</h1>
     </header>
     <div class="messages py-5">
-        <ul class="list-group list-group-flush px-2">
-            <% for(var i=0; i<rows.length; i++){ %>
-               
-                    <% if(sessionUserId === rows[i].userId){ %>
+        <ul class="list-group list-group-flush px-2">   
+            <% for(var i=0; i<rows.length; i++){ %>         
+                <% if(sessionUserId == rows[i].userId){ %>
                     <li class="list-group-item">
                         <img class="profile-send" src=<%= rows[i].thumnail %>>
                         <span class="message msg-send"><%= rows[i].message %></span>
@@ -96,9 +95,8 @@
                         <img class="profile-receive" src=<%= rows[i].thumnail %>>
                         <span class="message msg-receive"><%= rows[i].message %></span>
                     </li>
-                    <% } %>
-                
-            <% } %>
+                <% } %>              
+            <% } %>          
         </ul>
     </div>
     <footer class="fixed-bottom p-1">
