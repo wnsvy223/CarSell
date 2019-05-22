@@ -108,7 +108,7 @@ router.post('/register', upload.single('file'),function(req,res,next){
           console.log('connection pool error'+err);
         }else{
           var encoded_password = bcrypt.hashSync(param.password, 10); // 암호화된 비밀번호
-          connection.query('insert into users values(?,?,?,?)', [param.userId,param.email, encoded_password, param.profileImage], function (err, rows, fields) {
+          connection.query('insert into users values(?,?,?,?,?)', [param.userId,param.email, encoded_password, param.profileImage,''], function (err, rows, fields) {
             if (!err) {
               console.log('유저 가입 정보',param);
               console.log('업로드 파일 정보',req.file);

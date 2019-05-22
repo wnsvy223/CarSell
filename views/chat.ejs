@@ -50,8 +50,8 @@
             });
             
             // 서버의 'chat sended' 이벤트 수신시 실행할 이벤트핸들러 등록
-            socket.on('chat sended', function(data, sessionEmail) {
-                var userProfile = "<%= userProfile %>"; // 메시지 보낸사람 프로필사진       
+            socket.on('chat sended', function(data) {
+                var userProfile = '<%= userProfile %>'; // 메시지 보낸사람 프로필사진      
                 var $li = $('<li></li>').addClass('list-group-item');
                 var $span = $('<span></span>').addClass('message msg-send');
                 var $img = $('<img></img>').addClass('profile-send');
