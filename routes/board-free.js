@@ -30,9 +30,9 @@ router.get('/', function(req, res, next) {
                             userId : req.session.userId, 
                             rows : rows, 
                             moment : moment,
-                            totalPage : parseInt( rows.length / 10) + 1, 
-                            list : 10,
-                            currentPageIdx : 0
+                            totalPage : parseInt( rows.length / 10) + 1,             
+                            currentPageIdx : 0,
+                            board_type : 'board-free'
                         }
                         res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0'); 
                         // 캐시저장X -> 뒤로가기 누르면 조회수값 갱신
@@ -44,6 +44,41 @@ router.get('/', function(req, res, next) {
         });
     }
 }); 
+
+//내 게시물 페이지
+router.get('/mypage',function(req, res, next){
+    if(!req.session.email){
+        res.render('index'); 
+    }else{
+        mysqlDB.getConnection(function(err, connection){
+            if(err){
+                console.log('connection pool error'+err);
+            }else{
+                var query = 'select board.*,users.userProfile,(select count(*) as reply_count from board_reply where board.board_num = board_reply.board_num) reply_count from board inner join users on users.userId = board.userId_w where userId_w=? order by board.board_num desc';
+                connection.query(query, [req.session.userId], function (err, rows, fields){
+                    if(err){
+                        console.log('query error'+err);
+                    }else{ 
+                        var renderParam ={
+                            email : req.session.email, 
+                            profileImage : req.session.userProfile, 
+                            userId : req.session.userId, 
+                            rows : rows, 
+                            moment : moment,
+                            totalPage : parseInt( rows.length / 10) + 1,               
+                            currentPageIdx : 0,
+                            board_type : 'mypage'
+                        }
+                        res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0'); 
+                        // 캐시저장X -> 뒤로가기 누르면 조회수값 갱신
+                        res.render('board-free', renderParam);
+                        connection.release();
+                    }
+                });
+            }
+        });
+    }
+});
 
 // 페이징 처리
 router.get('/page/:idx', function(req, res, next){
@@ -76,9 +111,9 @@ router.get('/page/:idx', function(req, res, next){
                                         userId : req.session.userId, 
                                         rows : rows, 
                                         moment : moment,
-                                        totalPage:  parseInt(totalList / 10) + 1, // 10개 미만인 페이지의 경우 소수점이 되므로 + 1
-                                        list : rows.length, // 조회할 게시물 리스트 개수 = 남은 리스트 개수
-                                        currentPageIdx : parseInt(req.params.idx)
+                                        totalPage:  parseInt(totalList / 10) + 1, // 10개 미만인 페이지의 경우 소수점이 되므로 + 1                                      
+                                        currentPageIdx : parseInt(req.params.idx),
+                                        board_type : 'board-free'
                                     }
                                     res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
                                     res.render('board-free', renderParam);
@@ -90,9 +125,72 @@ router.get('/page/:idx', function(req, res, next){
                                         userId : req.session.userId, 
                                         rows : rows, 
                                         moment : moment,
-                                        totalPage: parseInt(totalList / 10) + 1,
-                                        list : 10,
-                                        currentPageIdx : parseInt(req.params.idx)
+                                        totalPage: parseInt(totalList / 10) + 1,                                       
+                                        currentPageIdx : parseInt(req.params.idx),
+                                        board_type : 'board-free'
+                                    }
+                                    res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
+                                    res.render('board-free', renderParam);
+                                    connection.release();
+                                }
+                            }
+                        });
+                    } 
+                });
+            }
+        }); 
+    }
+});
+
+// 내 게시물 페이징 처리
+router.get('/mypage/page/:idx', function(req, res, next){
+    if(!req.session.email){
+        res.render('index'); 
+    }else{
+        mysqlDB.getConnection(function(err, connection){
+            if(err){
+                console.log('connection pool error'+err);
+            }else{
+                pageNum = req.params.idx;
+                var queryAll = 'select board.*,users.userProfile,(select count(*) as reply_count from board_reply where board.board_num = board_reply.board_num) reply_count from board inner join users on users.userId = board.userId_w where userId_w=? order by board.board_num desc';
+                connection.query(queryAll, [req.session.userId], function(err, totalRows, fields){
+                    var totalList = totalRows.length;        // 전체 게시물 수
+                    var currentPage = parseInt(pageNum)  * 10;   // 페이지번호 * 10 = 게시물 인덱스값  
+                    if(currentPage < 0 || currentPage > totalList){
+                        res.send('<script type="text/javascript">alert("더 이상 글이 없습니다.");</script>');
+                    }else{ 
+                        var query = 'select board.*,users.userProfile,(select count(*) as reply_count from board_reply where board.board_num = board_reply.board_num) reply_count from board inner join users on users.userId = board.userId_w where userId_w=? order by board.board_num desc limit ?,?';
+                        // 페이지 번호가 바뀜에 따라 mysql limit + offset으로 10개 단위로 나눠서 조회
+                        connection.query(query, [req.session.userId, currentPage, 10], function (err, rows, fields){
+                            if(err){
+                                console.log('query error'+err);
+                            }else{
+                                //console.log('페이지:' + currentPage + '페이지 인덱스:' + parseInt(req.params.idx));
+                                if(rows.length < 10){ // 페이지에 남은 게시물이 10개 미만일 경우
+                                    var renderParam ={
+                                        email : req.session.email, 
+                                        profileImage : req.session.userProfile, 
+                                        userId : req.session.userId, 
+                                        rows : rows, 
+                                        moment : moment,
+                                        totalPage:  parseInt(totalList / 10) + 1, // 10개 미만인 페이지의 경우 소수점이 되므로 + 1
+                                       
+                                        currentPageIdx : parseInt(req.params.idx),
+                                        board_type : 'mypage'
+                                    }
+                                    res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
+                                    res.render('board-free', renderParam);
+                                    connection.release();
+                                }else{
+                                    var renderParam ={
+                                        email : req.session.email, 
+                                        profileImage : req.session.userProfile, 
+                                        userId : req.session.userId, 
+                                        rows : rows, 
+                                        moment : moment,
+                                        totalPage: parseInt(totalList / 10) + 1,                                
+                                        currentPageIdx : parseInt(req.params.idx),
+                                        board_type : 'mypage'
                                     }
                                     res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
                                     res.render('board-free', renderParam);

@@ -51,7 +51,7 @@
                   <ul class="dropdown-menu" role="menu">
                     <li><a href="/board-free">자유 게시판</a></li>
                     <li><a href="#">거래 게시판<a></li>
-                    <li><a href="#">내 게시물</a></li>    
+                    <li><a href="/board-free/mypage">내 게시물</a></li>    
                     <li><a href="/chat/list">내 대화목록</a></li>        
                   </ul>
                 </li>                  
@@ -109,45 +109,48 @@
                   </style>
                   <% if(rows.length === 0){ %>         
                     <td class="col-md-5 text_reduction">게시글이 없습니다.</td>           
-                  <% } else { %>
-                    <% for(var i= 0; i<list; i++){ %>
-                        <tr>
-                            <td class="col-md-1"><%=rows[i].board_num %></td>
-                            <td class="col-md-5 text_reduction">
-                              <span>
-                                <a style="color:black;" href="/board-free/detail?index=<%=rows[i].board_num %>&userProfile_w=<%=rows[i].userProfile %>&pageNum=<%=currentPageIdx %>">
-                                  <%=rows[i].board_title %>
-                                    <% if(rows[i].reply_count > 0){ %>
-                                      <span class="badge"><%=rows[i].reply_count %></span>                           
-                                    <% } %>
-                                </a>
-                                <!-- JS에서 쿼리스트링으로 추출할수 있도록 Url에 게시물번호와 작성자프로필사진값 같이 전달-->
-                              </span>
-                            </td>
-                        
-                            <td class="col-md-3">                       
-                                <div class="dropdown margin-left">  
-                                    <img  class="img-circle margin-left margin-profile-right" width="25" height="25" alt="..." src= <%=rows[i].userProfile %>
-                                    <a><%=rows[i].userId_w %></a>    
-                                    <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="caret"></span></a>      
-                                     <ul class="dropdown-menu">
-                                      <li><a href="/chat?room=<%=rows[i].board_num %>">대화하기<i class="fa fa-comment" style="float:right; font-size:18px;" ></i></a></li>
-                                      <li><a href="/board-free/showProfile?index=<%=rows[i].board_num %>">프로필 정보<i class="fa fa fa-address-book" style="float:right; font-size:18px;"></i></a></li>
-                                      <li><a href="">게시글 보기<i class="fa fa-pencil-square" style="float:right; font-size:18px;"></i></a></li>
-                                    </ul>
-                                </div>                          
-                            </td>
-                    
-                            <td class="col-md-2 text-center">
-                              <small><%=moment(rows[i].timeStamp).format('YYYY-MM-DD HH:mm:ss')%></small>
-                            </td>         
-                            <!--모멘트 객체 넘겨받아서 JS 코드를 이용해 날짜 포멧 변경 GMT => UTC LOCAL -->                                      
-                            <td  class="col-md-1 text-center">
-                              <small><%=rows[i].readCount %></small>
-                            </td>
-                        </tr>
-                    <% } %>         
+                  <% } else if(rows.length > 10){ %>
+                    <% rows.length = 10 %>
+                  <% } else { %>  
+                    <% rows.length = rows.length%>
                   <% } %>  
+                    <% for(var i= 0; i<rows.length ; i++){ %>
+                      <tr>
+                          <td class="col-md-1"><%=rows[i].board_num %></td>
+                          <td class="col-md-5 text_reduction">
+                            <span>
+                              <a style="color:black;" href="/board-free/detail?index=<%=rows[i].board_num %>&userProfile_w=<%=rows[i].userProfile %>&pageNum=<%=currentPageIdx %>">
+                                <%=rows[i].board_title %>
+                                  <% if(rows[i].reply_count > 0){ %>
+                                    <span class="badge"><%=rows[i].reply_count %></span>                           
+                                  <% } %>
+                              </a>
+                              <!-- JS에서 쿼리스트링으로 추출할수 있도록 Url에 게시물번호와 작성자프로필사진값 같이 전달-->
+                            </span>
+                          </td>
+                      
+                          <td class="col-md-3">                       
+                              <div class="dropdown margin-left">  
+                                  <img  class="img-circle margin-left margin-profile-right" width="25" height="25" alt="..." src= <%=rows[i].userProfile %>
+                                  <a><%=rows[i].userId_w %></a>    
+                                  <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="caret"></span></a>      
+                                  <ul class="dropdown-menu">
+                                    <li><a href="/chat?room=<%=rows[i].board_num %>">대화하기<i class="fa fa-comment" style="float:right; font-size:18px;" ></i></a></li>
+                                    <li><a href="/board-free/showProfile?index=<%=rows[i].board_num %>">프로필 정보<i class="fa fa fa-address-book" style="float:right; font-size:18px;"></i></a></li>
+                                    <li><a href="">게시글 보기<i class="fa fa-pencil-square" style="float:right; font-size:18px;"></i></a></li>
+                                  </ul>
+                              </div>                          
+                          </td>
+                  
+                          <td class="col-md-2 text-center">
+                            <small><%=moment(rows[i].timeStamp).format('YYYY-MM-DD HH:mm:ss')%></small>
+                          </td>         
+                          <!--모멘트 객체 넘겨받아서 JS 코드를 이용해 날짜 포멧 변경 GMT => UTC LOCAL -->                                      
+                          <td  class="col-md-1 text-center">
+                            <small><%=rows[i].readCount %></small>
+                          </td>
+                      </tr> 
+                    <% } %>     
                 </tbody>
             </table>
             <!-- <a class="btn btn-default pull-right" href="/board-free/write">글쓰기</a> -->
@@ -162,25 +165,51 @@
             <div class="container">
               <div class="text-center">
                   <ul class="pagination"> <!--게시판 페이징 버튼-->
-                    <% if(currentPageIdx > 0){ %>
-                      <li><a href="/board-free/page/<%= 0 %>">&laquo;</a></li>   <!--맨 앞으로 버튼-->
-                      <li><a href="/board-free/page/<%= currentPageIdx - 1 %>">&lsaquo;</a></li>    <!--좌측더보기버튼-->
-                      <li><a>...</a></li>
-                    <% } %>      
-                      <% for(var i=currentPageIdx-5; i<currentPageIdx+5; i++){ %>  
-                        <% if(i > -1 && i <=totalPage-1){ %>
-                          <% if(currentPageIdx == i){ %>                            
-                            <li class="active"><a href="/board-free/page/<%= i %>"><%= i+1 %></a></li>
-                          <% } else {%>
-                            <li><a href="/board-free/page/<%= i %>"><%= i+1 %></a></li>
-                          <% } %>  
-                        <% } %>     
+                    <% if(board_type === 'mypage'){ %>
+
+                      <% if(currentPageIdx > 0){ %>
+                        <li><a href="/board-free/mypage/page/<%= 0 %>">&laquo;</a></li>   <!--맨 앞으로 버튼-->
+                        <li><a href="/board-free/mypage/page/<%= currentPageIdx - 1 %>">&lsaquo;</a></li>    <!--좌측더보기버튼-->
+                        <li><a>...</a></li>
+                      <% } %>      
+                        <% for(var i=currentPageIdx-5; i<currentPageIdx+5; i++){ %>  
+                          <% if(i > -1 && i <=totalPage-1){ %>
+                            <% if(currentPageIdx == i){ %>                            
+                              <li class="active"><a href="/board-free/mypage/page/<%= i %>"><%= i+1 %></a></li>
+                            <% } else {%>
+                              <li><a href="/board-free/mypage/page/<%= i %>"><%= i+1 %></a></li>
+                            <% } %>  
+                          <% } %>     
+                        <% } %>   
+                      <% if(currentPageIdx != totalPage-1){ %>
+                        <li><a>...</a></li>
+                        <li><a href="/board-free/mypage/page/<%= currentPageIdx + 1 %>">&rsaquo;</a></li>    <!--우측더보기버튼--> 
+                        <li><a href="/board-free/mypage/page/<%= totalPage-1 %>">&raquo;</a></li>  <!--맨 뒤로 버튼--> 
                       <% } %>   
-                    <% if(currentPageIdx != totalPage-1){ %>
-                      <li><a>...</a></li>
-                      <li><a href="/board-free/page/<%= currentPageIdx + 1 %>">&rsaquo;</a></li>    <!--우측더보기버튼--> 
-                      <li><a href="/board-free/page/<%= totalPage-1 %>">&raquo;</a></li>  <!--맨 뒤로 버튼--> 
-                    <% } %>                
+
+                    <% }else{ %> 
+
+                      <% if(currentPageIdx > 0){ %>
+                        <li><a href="/board-free/page/<%= 0 %>">&laquo;</a></li>   <!--맨 앞으로 버튼-->
+                        <li><a href="/board-free/page/<%= currentPageIdx - 1 %>">&lsaquo;</a></li>    <!--좌측더보기버튼-->
+                        <li><a>...</a></li>
+                      <% } %>      
+                        <% for(var i=currentPageIdx-5; i<currentPageIdx+5; i++){ %>  
+                          <% if(i > -1 && i <=totalPage-1){ %>
+                            <% if(currentPageIdx == i){ %>                            
+                              <li class="active"><a href="/board-free/page/<%= i %>"><%= i+1 %></a></li>
+                            <% } else {%>
+                              <li><a href="/board-free/page/<%= i %>"><%= i+1 %></a></li>
+                            <% } %>  
+                          <% } %>     
+                        <% } %>   
+                      <% if(currentPageIdx != totalPage-1){ %>
+                        <li><a>...</a></li>
+                        <li><a href="/board-free/page/<%= currentPageIdx + 1 %>">&rsaquo;</a></li>    <!--우측더보기버튼--> 
+                        <li><a href="/board-free/page/<%= totalPage-1 %>">&raquo;</a></li>  <!--맨 뒤로 버튼--> 
+                      <% } %>   
+                    
+                    <% } %> 
                   </ul>
               </div>
             </div>
