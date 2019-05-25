@@ -72,9 +72,9 @@
               </ul>           
                 <form>                          
                   <% if(locals.profileImage){ %>                        
-                    <img  class="img-circle navbar-right"  alt="..." src= <%= profileImage %> <!--서버 저장된 이미지-->                                                    
+                    <img  class="img-circle navbar-right"  width="45" height="45" alt="..." src= <%= profileImage %> <!--서버 저장된 이미지-->                                                    
                   <% }else{ %>
-                    <img  class="img-circle navbar-right"  alt="..." src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" %> <!--빈 화면-->
+                    <img  class="img-circle navbar-right"  width="45" height="45" alt="..." src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" %> <!--빈 화면-->
                   <% } %>                  
                   <% if(locals.userId){ %>
                     <p class="white-text navbar-right"><%= userId %></p>     
@@ -89,6 +89,11 @@
 
     <!-- Board List-->
     <div class="row margin-top">
+        <% if(board_type === 'mypage'){ %>
+          <h2 class="text-center">내 게시글</h2>
+        <% }else{ %> 
+          <h2 class="text-center">자유 게시판</h2>
+        <% } %> 
         <div class="container">
             <table class="table table-striped">
                 <thead> <!-- 게시판 테이블 헤더부분-->
