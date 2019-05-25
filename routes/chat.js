@@ -32,7 +32,7 @@ module.exports = function(io){
                   userProfile : userProfile,
                   rows : rows
                 }    
-                //console.log('대화내용 : ' + JSON.stringify(params.rows));
+                console.log('대화내용 : ' + JSON.stringify(params.rows));
                 res.render('chat', params);        
               }         
               connection.release();
@@ -54,8 +54,8 @@ module.exports = function(io){
         if(err){
             console.log('connection pool error'+err);
         }else{
-          var query = 'select chat_list.*,(select users.userProfile as ownerProfile from users where users.userId = chat_list.visit) ownerProfile from chat_list inner join users on users.userId = chat_list.owner where owner=? or visit=? order by chat_list.timeStamp_chat desc';
-          // 로그인한 유저가 참여한 대화목록만 조회        
+          var query = 'select chat_list.*,(select users.userProfile from users where users.userId = chat_list.visit) ownerProfile,(select chat_content.message from chat_content where chat_content.roomName=chat_list.roomName and timeStamp_chat = (select MAX(timeStamp_chat) from chat_content where chat_content.roomName=chat_list.roomName)) lastMessage from chat_list left outer join users on users.userId = chat_list.owner where owner=? or visit=? order by chat_list.timeStamp_chat desc';
+          // 로그인한 유저가 참여한 대화목록만 조회( left outer join으로 프로필사진과 해당 채팅방의 마지막 메시지값 조인)        
           connection.query(query,[req.session.userId, req.session.userId], function(err, rows, fields){
               if(err){
                 console.log('quey error'+err);
@@ -68,6 +68,7 @@ module.exports = function(io){
                   moment : moment
 
                 };                
+                res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
                 res.render('chat-list', params);
                 connection.release();
               }
