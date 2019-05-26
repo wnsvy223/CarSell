@@ -32,7 +32,7 @@ module.exports = function(io){
                   userProfile : userProfile,
                   rows : rows
                 }    
-                console.log('대화내용 : ' + JSON.stringify(params.rows));
+                //console.log('대화내용 : ' + JSON.stringify(params.rows));
                 res.render('chat', params);        
               }         
               connection.release();
@@ -76,6 +76,30 @@ module.exports = function(io){
         }
       });  
     }    
+  });
+
+  router.get('/exit',function(req, res, next){
+    if(!req.session.email){
+      res.render('index'); // 세션이 끊긴 상태면 로그인 페이지로
+    }else{
+      mysqlDB.getConnection(function(err, connection){
+        if(err){
+            console.log('connection pool error'+err);
+        }else{
+          var query = 'update chat_list set chat_list.roomStatus=? where chat_list.roomName=?';  
+          var roomStatus = 'empty';
+          connection.query(query, [roomStatus, req.query.room], function(err, rows, fields){
+            if(err){
+              console.log('quey error'+err);
+            }else{      
+              console.log('채팅방 상태값 : ' + req.query.room + '번 방은 ' + roomStatus);;       
+              connection.release();
+              res.redirect('/chat/list');
+            }
+        });     
+        }
+      });
+    }
   });
 
   io.on('connection',function(socket){
@@ -169,8 +193,9 @@ function saveChatList(userId_w){
         console.log('connection pool error'+err);
     }else{
       var now = moment().format('YYYY-MM-DD HH:mm:ss:SSS');
-      var query = 'insert into chat_list (owner, visit, roomName, timeStamp_chat) select ?,?,?,? from dual where not exists (select roomName from chat_list where roomName=?)';       
-      connection.query(query, [sessionUserId, userId_w, roomname, now, roomname], function(err, rows, fields){
+      var roomStatus = 'exist';
+      var query = 'insert into chat_list (owner, visit, roomName, timeStamp_chat, roomStatus) select ?,?,?,?,? from dual where not exists (select roomName from chat_list where roomName=?)';       
+      connection.query(query, [sessionUserId, userId_w, roomname, now, roomStatus, roomname], function(err, rows, fields){
           if(err){
             console.log('quey error'+err);
           }else{      
