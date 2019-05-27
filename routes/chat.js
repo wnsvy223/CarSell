@@ -8,7 +8,7 @@ var moment = require('moment');
 
 module.exports = function(io){
 
-  // 채팅 화면 라우터
+  // 채팅 화면
   router.get('/', function(req, res, next) {
     if(req.session.email){
       roomname = req.query.room; // 게시물 번호를 방이름으로
@@ -45,7 +45,7 @@ module.exports = function(io){
     }
   });
 
-  // 채팅 대화목록 라우터
+  // 채팅 대화목록
   router.get('/list',function(req, res, next){ 
     if(!req.session.email){
       res.render('index'); // 세션이 끊긴 상태면 로그인 페이지로
@@ -78,6 +78,7 @@ module.exports = function(io){
     }    
   });
 
+  // 채팅방 나가기 
   router.get('/exit',function(req, res, next){
     if(!req.session.email){
       res.render('index'); // 세션이 끊긴 상태면 로그인 페이지로
@@ -96,7 +97,7 @@ module.exports = function(io){
               connection.release();
               res.redirect('/chat/list');
             }
-        });     
+          });     
         }
       });
     }
