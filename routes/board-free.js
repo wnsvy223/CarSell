@@ -45,17 +45,18 @@ router.get('/', function(req, res, next) {
     }
 }); 
 
-//내 게시물 페이지
-router.get('/mypage',function(req, res, next){
+// 특정 유저 게시물 페이지
+router.get('/mypage?:userId',function(req, res, next){
     if(!req.session.email){
         res.render('index'); 
     }else{
+        var uid = req.query.userId; // 쿼리스트링으로 유저구분
         mysqlDB.getConnection(function(err, connection){
             if(err){
                 console.log('connection pool error'+err);
             }else{
                 var query = 'select board.*,users.userProfile,(select count(*) as reply_count from board_reply where board.board_num = board_reply.board_num) reply_count from board inner join users on users.userId = board.userId_w where userId_w=? order by board.board_num desc';
-                connection.query(query, [req.session.userId], function (err, rows, fields){
+                connection.query(query, [uid], function (err, rows, fields){
                     if(err){
                         console.log('query error'+err);
                     }else{ 
@@ -63,6 +64,7 @@ router.get('/mypage',function(req, res, next){
                             email : req.session.email, 
                             profileImage : req.session.userProfile, 
                             userId : req.session.userId, 
+                            uid : uid,
                             rows : rows, 
                             moment : moment,
                             totalPage : parseInt( rows.length / 10) + 1,               
@@ -143,7 +145,7 @@ router.get('/page/:idx', function(req, res, next){
 });
 
 // 내 게시물 페이징 처리
-router.get('/mypage/page/:idx', function(req, res, next){
+router.get('/mypage/page/:idx/userId/:userId', function(req, res, next){
     if(!req.session.email){
         res.render('index'); 
     }else{
@@ -152,6 +154,7 @@ router.get('/mypage/page/:idx', function(req, res, next){
                 console.log('connection pool error'+err);
             }else{
                 pageNum = req.params.idx;
+                var uid = req.params.userId;
                 var queryAll = 'select board.*,users.userProfile,(select count(*) as reply_count from board_reply where board.board_num = board_reply.board_num) reply_count from board inner join users on users.userId = board.userId_w where userId_w=? order by board.board_num desc';
                 connection.query(queryAll, [req.session.userId], function(err, totalRows, fields){
                     var totalList = totalRows.length;        // 전체 게시물 수
@@ -174,7 +177,7 @@ router.get('/mypage/page/:idx', function(req, res, next){
                                         rows : rows, 
                                         moment : moment,
                                         totalPage:  parseInt(totalList / 10) + 1, // 10개 미만인 페이지의 경우 소수점이 되므로 + 1
-                                       
+                                        uid : uid,
                                         currentPageIdx : parseInt(req.params.idx),
                                         board_type : 'mypage'
                                     }
@@ -188,7 +191,8 @@ router.get('/mypage/page/:idx', function(req, res, next){
                                         userId : req.session.userId, 
                                         rows : rows, 
                                         moment : moment,
-                                        totalPage: parseInt(totalList / 10) + 1,                                
+                                        totalPage: parseInt(totalList / 10) + 1,    
+                                        uid : uid,                            
                                         currentPageIdx : parseInt(req.params.idx),
                                         board_type : 'mypage'
                                     }

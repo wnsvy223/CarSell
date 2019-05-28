@@ -51,7 +51,7 @@
                   <ul class="dropdown-menu" role="menu">
                     <li><a href="/board-free">자유 게시판</a></li>
                     <li><a href="#">거래 게시판<a></li>
-                    <li><a href="/board-free/mypage">내 게시물</a></li>    
+                    <li><a href="/board-free/mypage?userId=<%=userId %>">내 게시물</a></li>    
                     <li><a href="/chat/list">내 대화목록</a></li>        
                   </ul>
                 </li>                  
@@ -142,7 +142,7 @@
                                   <ul class="dropdown-menu">
                                     <li><a href="/chat?room=<%=rows[i].board_num %>">대화하기<i class="fa fa-comment" style="float:right; font-size:18px;" ></i></a></li>
                                     <li><a href="/board-free/showProfile?index=<%=rows[i].board_num %>">프로필 정보<i class="fa fa fa-address-book" style="float:right; font-size:18px;"></i></a></li>
-                                    <li><a href="">게시글 보기<i class="fa fa-pencil-square" style="float:right; font-size:18px;"></i></a></li>
+                                    <li><a href="/board-free/mypage?userId=<%=rows[i].userId_w %>">게시글 보기<i class="fa fa-pencil-square" style="float:right; font-size:18px;"></i></a></li>
                                   </ul>
                               </div>                          
                           </td>
@@ -173,23 +173,23 @@
                     <% if(board_type === 'mypage'){ %>
 
                       <% if(currentPageIdx > 0){ %>
-                        <li><a href="/board-free/mypage/page/<%= 0 %>">&laquo;</a></li>   <!--맨 앞으로 버튼-->
-                        <li><a href="/board-free/mypage/page/<%= currentPageIdx - 1 %>">&lsaquo;</a></li>    <!--좌측더보기버튼-->
+                        <li><a href="/board-free/mypage/page/<%= 0 %>/userId/<%=uid %>">&laquo;</a></li>   <!--맨 앞으로 버튼-->
+                        <li><a href="/board-free/mypage/page/<%= currentPageIdx - 1 %>/userId/<%=uid %>">&lsaquo;</a></li>    <!--좌측더보기버튼-->
                         <li><a>...</a></li>
                       <% } %>      
                         <% for(var i=currentPageIdx-5; i<currentPageIdx+5; i++){ %>  
                           <% if(i > -1 && i <=totalPage-1){ %>
                             <% if(currentPageIdx == i){ %>                            
-                              <li class="active"><a href="/board-free/mypage/page/<%= i %>"><%= i+1 %></a></li>
+                              <li class="active"><a href="/board-free/mypage/page/<%= i %>/userId/<%=uid %>"><%= i+1 %></a></li>
                             <% } else {%>
-                              <li><a href="/board-free/mypage/page/<%= i %>"><%= i+1 %></a></li>
+                              <li><a href="/board-free/mypage/page/<%= i %>/userId/<%=uid %>"><%= i+1 %></a></li>
                             <% } %>  
                           <% } %>     
                         <% } %>   
                       <% if(currentPageIdx != totalPage-1){ %>
                         <li><a>...</a></li>
-                        <li><a href="/board-free/mypage/page/<%= currentPageIdx + 1 %>">&rsaquo;</a></li>    <!--우측더보기버튼--> 
-                        <li><a href="/board-free/mypage/page/<%= totalPage-1 %>">&raquo;</a></li>  <!--맨 뒤로 버튼--> 
+                        <li><a href="/board-free/mypage/page/<%= currentPageIdx + 1 %>/userId/<%=uid %>">&rsaquo;</a></li>    <!--우측더보기버튼--> 
+                        <li><a href="/board-free/mypage/page/<%= totalPage-1 %>/userId/<%=uid %>">&raquo;</a></li>  <!--맨 뒤로 버튼--> 
                       <% } %>   
 
                     <% }else{ %> 

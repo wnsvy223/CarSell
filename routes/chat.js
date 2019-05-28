@@ -195,8 +195,9 @@ function saveChatList(userId_w){
     }else{
       var now = moment().format('YYYY-MM-DD HH:mm:ss:SSS');
       var roomStatus = 'exist';
-      var query = 'insert into chat_list (owner, visit, roomName, timeStamp_chat, roomStatus) select ?,?,?,?,? from dual where not exists (select roomName from chat_list where roomName=?)';       
-      connection.query(query, [sessionUserId, userId_w, roomname, now, roomStatus, roomname], function(err, rows, fields){
+      //var query = 'insert into chat_list (owner, visit, roomName, timeStamp_chat, roomStatus) select ?,?,?,?,? from dual where not exists (select roomName from chat_list where roomName=?)';       
+      var query = 'insert into chat_list (owner, visit, roomName, timeStamp_chat, roomStatus) select ?,?,?,?,? from dual where not exists (select roomName from chat_list where owner=? and visit=?)'; 
+      connection.query(query, [sessionUserId, userId_w, roomname, now, roomStatus, sessionUserId, userId_w], function(err, rows, fields){
           if(err){
             console.log('quey error'+err);
           }else{      
