@@ -268,7 +268,13 @@ a {
   color: #747474;
   display: block;
   font-size: 12px;
-  margin: 8px 0 0;
+  float: right;;
 }
 
 .messaging { padding: 0 0 50px 0;}
+
+.text_overflow {
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis
+}

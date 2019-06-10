@@ -106,35 +106,19 @@ router.get('/page/:idx', function(req, res, next){
                                 console.log('query error'+err);
                             }else{
                                 //console.log('페이지:' + currentPage + '페이지 인덱스:' + parseInt(req.params.idx));
-                                if(rows.length < 10){ // 페이지에 남은 게시물이 10개 미만일 경우
-                                    var renderParam ={
-                                        email : req.session.email, 
-                                        profileImage : req.session.userProfile, 
-                                        userId : req.session.userId, 
-                                        rows : rows, 
-                                        moment : moment,
-                                        totalPage:  parseInt(totalList / 10) + 1, // 10개 미만인 페이지의 경우 소수점이 되므로 + 1                                      
-                                        currentPageIdx : parseInt(req.params.idx),
-                                        board_type : 'board-free'
-                                    }
-                                    res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
-                                    res.render('board-free', renderParam);
-                                    connection.release();
-                                }else{
-                                    var renderParam ={
-                                        email : req.session.email, 
-                                        profileImage : req.session.userProfile, 
-                                        userId : req.session.userId, 
-                                        rows : rows, 
-                                        moment : moment,
-                                        totalPage: parseInt(totalList / 10) + 1,                                       
-                                        currentPageIdx : parseInt(req.params.idx),
-                                        board_type : 'board-free'
-                                    }
-                                    res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
-                                    res.render('board-free', renderParam);
-                                    connection.release();
+                                var renderParam ={
+                                    email : req.session.email, 
+                                    profileImage : req.session.userProfile, 
+                                    userId : req.session.userId, 
+                                    rows : rows, 
+                                    moment : moment,
+                                    totalPage: parseInt(totalList / 10) + 1,                                       
+                                    currentPageIdx : parseInt(req.params.idx),
+                                    board_type : 'board-free'
                                 }
+                                res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
+                                res.render('board-free', renderParam);
+                                connection.release();
                             }
                         });
                     } 
@@ -169,37 +153,20 @@ router.get('/mypage/page/:idx/userId/:userId', function(req, res, next){
                                 console.log('query error'+err);
                             }else{
                                 //console.log('페이지:' + currentPage + '페이지 인덱스:' + parseInt(req.params.idx));
-                                if(rows.length < 10){ // 페이지에 남은 게시물이 10개 미만일 경우
-                                    var renderParam ={
-                                        email : req.session.email, 
-                                        profileImage : req.session.userProfile, 
-                                        userId : req.session.userId, 
-                                        rows : rows, 
-                                        moment : moment,
-                                        totalPage:  parseInt(totalList / 10) + 1, // 10개 미만인 페이지의 경우 소수점이 되므로 + 1
-                                        uid : uid,
-                                        currentPageIdx : parseInt(req.params.idx),
-                                        board_type : 'mypage'
-                                    }
-                                    res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
-                                    res.render('board-free', renderParam);
-                                    connection.release();
-                                }else{
-                                    var renderParam ={
-                                        email : req.session.email, 
-                                        profileImage : req.session.userProfile, 
-                                        userId : req.session.userId, 
-                                        rows : rows, 
-                                        moment : moment,
-                                        totalPage: parseInt(totalList / 10) + 1,    
-                                        uid : uid,                            
-                                        currentPageIdx : parseInt(req.params.idx),
-                                        board_type : 'mypage'
-                                    }
-                                    res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
-                                    res.render('board-free', renderParam);
-                                    connection.release();
+                                var renderParam ={
+                                    email : req.session.email, 
+                                    profileImage : req.session.userProfile, 
+                                    userId : req.session.userId, 
+                                    rows : rows, 
+                                    moment : moment,
+                                    totalPage:  parseInt(totalList / 10) + 1, // 10개 미만인 페이지의 경우 소수점이 되므로 + 1
+                                    uid : uid,
+                                    currentPageIdx : parseInt(req.params.idx),
+                                    board_type : 'mypage'
                                 }
+                                res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
+                                res.render('board-free', renderParam);
+                                connection.release();                 
                             }
                         });
                     } 

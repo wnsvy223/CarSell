@@ -99,23 +99,24 @@
             <% for(var i= 0; i<rows.length; i++){ %>
             <div>           
                 <button type="button" class="close" aria-label="Close" onclick="location.href='/chat/exit?room=<%=rows[i].roomName %>'"><span aria-hidden="true">&times;</span></button>
-            </div> 
+            </div>   
             <div  class="chat_list" onclick="location.href ='/chat?room=<%=rows[i].roomName %>'">
-              <div class="chat_people">
+              <div class="chat_people"> 
                 <div class="chat_img col-md-1"> <img class="img-circle" width="40" height="40" src=<%=rows[i].ownerProfile %>> </div>
-                <div class="chat_ib col-md-11">
-                  <h5><%=rows[i].visit %> 
-                    <span class="chat_date">
-                        <%=moment(rows[i].timeStamp_chat).format('YYYY-MM-DD HH:mm:ss') %>
-                    </span>
-                  </h5>
+                <div class="chat_ib col-md-10">
+                  <h5><%=rows[i].visit %></h5>
                   <% var status = rows[i].roomStatus %> 
                   <% if(status === 'empty'){ %> 
-                    <p>대화 상대가 채팅방을 나갔습니다.</p>
+                    <p class="text_overflow">대화 상대가 채팅방을 나갔습니다.</p>
                   <% } else { %>
-                    <p><%=rows[i].lastMessage %></p>
-                  <% } %>
-                </div>       
+                    <p class="text_overflow"><%=rows[i].lastMessage %></p>
+                  <% } %>                 
+                </div>   
+                <div class="chat_date col-md-1">
+                  <span>
+                      <%=moment(rows[i].timeStamp_chat).format('YYYY-MM-DD HH:mm:ss') %>
+                  </span> 
+                </div>    
               </div>               
             </div>                               
             <% } %>  
