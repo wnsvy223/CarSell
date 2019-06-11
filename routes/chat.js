@@ -54,7 +54,7 @@ module.exports = function(io){
         if(err){
             console.log('connection pool error'+err);
         }else{
-          var query = 'select chat_list.*,(select users.userProfile from users where users.userId = chat_list.visit) ownerProfile,(select chat_content.message from chat_content where chat_content.roomName=chat_list.roomName and timeStamp_chat = (select MAX(timeStamp_chat) from chat_content where chat_content.roomName=chat_list.roomName)) lastMessage from chat_list left outer join users on users.userId = chat_list.owner where owner=? or visit=? order by chat_list.timeStamp_chat desc';
+          var query ='select chat_list.*,(select users.userProfile from users where users.userId = chat_list.visit) visitProfile,(select users.userProfile from users where users.userId = chat_list.owner) ownerProfile,(select chat_content.message from chat_content where chat_content.roomName=chat_list.roomName and timeStamp_chat = (select MAX(timeStamp_chat) from chat_content where chat_content.roomName=chat_list.roomName)) lastMessage from chat_list left outer join users on users.userId = chat_list.owner where owner=? or visit=? order by chat_list.timeStamp_chat desc'
           // 로그인한 유저가 참여한 대화목록만 조회( left outer join으로 프로필사진과 해당 채팅방의 마지막 메시지값 조인)        
           connection.query(query,[req.session.userId, req.session.userId], function(err, rows, fields){
               if(err){
@@ -196,8 +196,8 @@ function saveChatList(userId_w){
       var now = moment().format('YYYY-MM-DD HH:mm:ss:SSS');
       var roomStatus = 'exist';
       //var query = 'insert into chat_list (owner, visit, roomName, timeStamp_chat, roomStatus) select ?,?,?,?,? from dual where not exists (select roomName from chat_list where roomName=?)';       
-      var query = 'insert into chat_list (owner, visit, roomName, timeStamp_chat, roomStatus) select ?,?,?,?,? from dual where not exists (select roomName from chat_list where owner=? and visit=?)'; 
-      connection.query(query, [sessionUserId, userId_w, roomname, now, roomStatus, sessionUserId, userId_w], function(err, rows, fields){
+      var query = 'insert into chat_list (owner, visit, roomName, timeStamp_chat, roomStatus) select ?,?,?,?,? from dual where not exists (select roomName from chat_list where (owner=? or visit=?) and roomName=?)'; 
+      connection.query(query, [sessionUserId, userId_w, roomname, now, roomStatus, sessionUserId, userId_w, roomname], function(err, rows, fields){
           if(err){
             console.log('quey error'+err);
           }else{      

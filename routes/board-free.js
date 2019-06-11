@@ -310,8 +310,8 @@ router.get('/detail?:data_board_num', function(req, res, next){
                                     replyLength : subrows.length, // 댓글 갯수
                                     pageNum : parseInt(pageNum)// 게시물 페이지 번호
                                 };
-                                var board_idx = rows[0].board_num; // 쿼리된 번호에 해당하는 게시글의 조회수 +1 해서 업데이트
-                                //console.log('인덱스', + board_idx);
+                                var board_idx = rows[0].board_num; 
+                                // 쿼리된 번호에 해당하는 게시글의 조회수 +1 해서 업데이트
                                 var updateViewsQuery = 'update board set board.readCount=board.readCount + 1 where board.board_num=?';
                                 connection.query(updateViewsQuery,[board_idx], function(err, rows, fields){
                                     if(err){
@@ -422,6 +422,7 @@ router.post('/update/commit', function(req, res, next){
     }
 });
 
+// 게시글 작성자 프로필 보기
 router.get('/showProfile', function(req, res, next){
     if(!req.session.email){
         res.render('index'); 
