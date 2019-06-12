@@ -339,8 +339,9 @@ router.get('/delete?:index', function(req, res, next){
     mysqlDB.getConnection(function(err, connection){
         if(err){
             console.log('connection pool error'+err);
-        }else{
-            var query = 'delete from board where board_num=?';       
+        }else{  
+            var query = 'delete board, board_reply from board inner join board_reply on board.board_num = board_reply.board_num where board.board_num=?'
+            // 게시판 테이블과 댓글테이블을 board_num을 참조하여 해당 게시물 row 조인 삭제
             connection.query(query, [board_idx], function(err, rows, fields){
                 if(err){
                     console.log('quey error'+err);
