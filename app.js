@@ -12,6 +12,7 @@ var usersRouter = require('./routes/users');
 var profileRouter = require('./routes/profile');
 var board_free_Router = require('./routes/board-free');
 var chatRouter = require('./routes/chat')(app.io);
+var streamRouter = require('./routes/stream')(app.io);
 var session = require('express-session');
 var MySQLStroe = require('express-mysql-session')(session);
 
@@ -54,6 +55,7 @@ app.use('/users', usersRouter);
 app.use('/profile', profileRouter);
 app.use('/board-free', board_free_Router);
 app.use('/chat', chatRouter);
+app.use('/stream',streamRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

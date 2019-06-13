@@ -103,6 +103,7 @@ module.exports = function(io){
     }
   });
 
+  /*
   io.on('connection',function(socket){
     var room = roomname;  // 라우터로부터 받아온 방이름(게시물 번호)
     socket.join(room); // 방 참가
@@ -183,7 +184,7 @@ module.exports = function(io){
   .on('error', function(execption){
     console.log('소켓통신오류 : ' + execption);
   });
-  
+  */
   return router;
 }
 
