@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <script src="https://rtcmulticonnection.herokuapp.com/dist/RTCMultiConnection.min.js"></script>
+    <script src="https://rtcmulticonnection.herokuapp.com/socket.io/socket.io.js"></script>
+<head>
+    <input id="text-roomId" placeholder="룸아이디">
+    <button id="open">Open Room</button>
+    <button id="join">Join Room</button>
+    <button id="openOrJoin">Open Or Join Room</button>
+    <!--
+    <div id ="video-contaioner">
+    </div>
+    -->
+</head>
+
+<body>
+
+    <script type="text/javascript">
+        var connection = new RTCMultiConnection();
+        //connection.socketURL = 'https://rtcmulticonnection.herokuapp.com:443/'; // Free Socket.io Seerver
+        connection.session = {
+            audio: true,
+            video: true
+        };
+
+        connection.optionalArgument = {};
+        connection.processSdp = function(sdp) {
+            return sdp; // return unchanged SDP
+        };
+
+        connection.sdpConstraints.mandatory = {
+            OfferToReceiveAudio: true,
+            OfferToReceiveVideo: true
+        };
+
+        //var localVideoContainer = document.getElementById('video-contaioner');
+        connection.onstream = function(event) {
+            document.body.appendChild( event.mediaElement );
+            /*
+            var video = event.mediaElment;
+            if(event.type === 'local'){
+                localVideoContainer.body.appendChild(video);
+            }
+            if(event.type === 'remote'){
+                remoteVideoContainer.body.appendChild(video);
+            }
+            */
+        };
+
+        var roomName = document.getElementById('text-roomId');
+        //roomName.value = connection.token();
+        
+        document.getElementById('openOrJoin').onclick = function() {
+            this.disabled = true;
+            connection.openOrJoin( roomName.value ); // 입력값 가져올땐 실제값인 .value로 가져옴
+        };
+
+        document.getElementById('open').onclick = function() {
+            this.disabled = true;
+            connection.open( roomName.value );
+        };
+
+        
+        document.getElementById('join').onclick = function() {
+            this.disabled = true;
+            connection.join( roomName.value );
+        };
+        
+    </script>
+
+</body>
+
+</html>

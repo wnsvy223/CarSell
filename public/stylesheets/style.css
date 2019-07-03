@@ -278,3 +278,8 @@ a {
   white-space:nowrap;
   text-overflow:ellipsis
 }
+
+video{
+  width: 40%;
+  border-radius: 15px;
+}
