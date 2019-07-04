@@ -50,10 +50,49 @@
         .profile-receive{ float: left; width: 40px; height: 40px; border-radius: 50%; margin: 5px;}
     </style>
 
-    <script type="text/javascript">
+</head>
+
+<body>
+    <header class="fixed-top p-1">
+        <h1 class="px-3 mt-3">채팅</h1>
+    </header>
+    <div class="messages">
+        <ul class="list-group">   
+            <% for(var i=0; i<rows.length; i++){ %>         
+                <% if(sessionUserId == rows[i].userId){ %>
+                    <li class="list-group-item">
+                        <img class="profile-send" src=<%= rows[i].thumnail %>>
+                        <span class="message msg-send"><%= rows[i].message %></span>
+                    </li>
+                    <% } else {%>
+                    <span><%= rows[i].userId %></span>
+                    <li class="list-group-item">
+                        <img class="profile-receive" src=<%= rows[i].thumnail %>>
+                        <span class="message msg-receive"><%= rows[i].message %></span>
+                    </li>
+                <% } %>              
+            <% } %>          
+        </ul>
+    </div>
+    <footer class="fixed-bottom p-1 ">
+        <form>
+            <div class="input-group input-group-lg">
+                <div class="input-group-prepend">
+                    <label for="message" class="input-group-text px-3">메시지</label>
+                </div>
+                <input type="text" id="message" autocomplete="off" placeholder="전송할 메시지를 입력해 주세요." class="form-control">
+                <div class="input-group-append">
+                    <input type="submit" value="전송" class="btn btn-primary px-4">
+                </div>
+            </div>
+        </form>
+    </footer>
+
+    <script>
         $(function() {
             // Socket.IO 서버에 접속
-            var socket = io();
+            var socket = io(); 
+           
             $(document).scrollTop($(document).height()); // 스크롤 맨 아래로
             // 서버의 'chat message' 이벤트 수신시 실행할 이벤트핸들러 등록          
             socket.on('chat message', function(data, params) {
@@ -95,44 +134,8 @@
                 $fldMessage.val('');
             });
         });
-</script>
-</head>
+    </script>
 
-<body>
-    <header class="fixed-top p-1">
-        <h1 class="px-3 mt-3">채팅</h1>
-    </header>
-    <div class="messages">
-        <ul class="list-group">   
-            <% for(var i=0; i<rows.length; i++){ %>         
-                <% if(sessionUserId == rows[i].userId){ %>
-                    <li class="list-group-item">
-                        <img class="profile-send" src=<%= rows[i].thumnail %>>
-                        <span class="message msg-send"><%= rows[i].message %></span>
-                    </li>
-                    <% } else {%>
-                    <span><%= rows[i].userId %></span>
-                    <li class="list-group-item">
-                        <img class="profile-receive" src=<%= rows[i].thumnail %>>
-                        <span class="message msg-receive"><%= rows[i].message %></span>
-                    </li>
-                <% } %>              
-            <% } %>          
-        </ul>
-    </div>
-    <footer class="fixed-bottom p-1 ">
-        <form>
-            <div class="input-group input-group-lg">
-                <div class="input-group-prepend">
-                    <label for="message" class="input-group-text px-3">메시지</label>
-                </div>
-                <input type="text" id="message" autocomplete="off" placeholder="전송할 메시지를 입력해 주세요." class="form-control">
-                <div class="input-group-append">
-                    <input type="submit" value="전송" class="btn btn-primary px-4">
-                </div>
-            </div>
-        </form>
-    </footer>
 </body>
 
 </html>

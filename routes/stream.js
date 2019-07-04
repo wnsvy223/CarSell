@@ -8,6 +8,8 @@ var config = {
     "socketMessageEvent": "RTCMultiConnection-Message",
     "socketCustomEvent": "RTCMultiConnection-Custom-Message",
     "port": 8443,
+    "sslKey": "./keys/key.pem",
+    "sslCert": "./keys/cert.pem",
     "enableLogs": false,
     "isUseHTTPs": true,
     "enableAdmin": false
@@ -24,9 +26,10 @@ module.exports = function(io){
         }
     });
 
-    
+    /*
+    // Custom Socket.io Seerver connection
     io.on('connection', function(socket){
-        RTCMultiConnectionServer.addSocket(socket, config);
+        RTCMultiConnectionServer.addSocket(socket, { config: config });
 
         const params = socket.handshake.query;
 
@@ -39,7 +42,7 @@ module.exports = function(io){
         });
 
     });
-    
+    */
     
     return router;
 }

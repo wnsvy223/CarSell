@@ -11,7 +11,7 @@ module.exports = function(io){
   // 채팅 화면
   router.get('/', function(req, res, next) {
     if(req.session.email){
-      roomname = req.query.room; // 게시물 번호를 방이름으로
+      roomname = req.query.room; 
       sessionEmail = req.session.email;
       sessionUserId = req.session.userId;
       var sessionProfile = req.session.userProfile;
@@ -103,7 +103,7 @@ module.exports = function(io){
     }
   });
 
-  /*
+
   io.on('connection',function(socket){
     var room = roomname;  // 라우터로부터 받아온 방이름(게시물 번호)
     socket.join(room); // 방 참가
@@ -132,18 +132,19 @@ module.exports = function(io){
       if(err){
           console.log('connection pool error'+err);
       }else{
-        var query = 'select userId_w from board where board.board_num = ?'; 
+        var query = 'select userId_w from board where board.userId_w = ?'; 
         connection.query(query, [roomname], function(err, rows, fields){
             if(err){
               console.log('quey error'+err);
             }else{             
-              console.log('아이디 : ' + JSON.stringify(rows));  
+              console.log('아이디 : ' + JSON.stringify(rows[0].userId_w));  
               saveChatList(rows[0].userId_w);
             }
             connection.release();
         });   
       }
     }); 
+
     
     // 클라이언트 접속이 종료될 경우 실행할 이벤트핸들러 등록
     socket.on('disconnect', function() {
@@ -184,7 +185,7 @@ module.exports = function(io){
   .on('error', function(execption){
     console.log('소켓통신오류 : ' + execption);
   });
-  */
+
   return router;
 }
 
@@ -196,9 +197,8 @@ function saveChatList(userId_w){
     }else{
       var now = moment().format('YYYY-MM-DD HH:mm:ss:SSS');
       var roomStatus = 'exist';
-      //var query = 'insert into chat_list (owner, visit, roomName, timeStamp_chat, roomStatus) select ?,?,?,?,? from dual where not exists (select roomName from chat_list where roomName=?)';       
-      var query = 'insert into chat_list (owner, visit, roomName, timeStamp_chat, roomStatus) select ?,?,?,?,? from dual where not exists (select roomName from chat_list where (owner=? or visit=?) and roomName=?)'; 
-      connection.query(query, [sessionUserId, userId_w, roomname, now, roomStatus, sessionUserId, userId_w, roomname], function(err, rows, fields){
+      var query = 'insert into chat_list (owner, visit, roomName, timeStamp_chat, roomStatus) select ?,?,?,?,? from dual where not exists (select roomName from chat_list where roomName=?)'; 
+      connection.query(query, [sessionUserId, userId_w, roomname, now, roomStatus, userId_w], function(err, rows, fields){
           if(err){
             console.log('quey error'+err);
           }else{      

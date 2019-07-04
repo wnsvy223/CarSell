@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html>
+   
+<head>
     <script src="https://rtcmulticonnection.herokuapp.com/dist/RTCMultiConnection.min.js"></script>
     <script src="https://rtcmulticonnection.herokuapp.com/socket.io/socket.io.js"></script>
-<head>
+</head>
+
+<body>
+
     <input id="text-roomId" placeholder="룸아이디">
     <button id="open">Open Room</button>
     <button id="join">Join Room</button>
@@ -11,13 +16,10 @@
     <div id ="video-contaioner">
     </div>
     -->
-</head>
 
-<body>
-
-    <script type="text/javascript">
+    <script>
         var connection = new RTCMultiConnection();
-        //connection.socketURL = 'https://rtcmulticonnection.herokuapp.com:443/'; // Free Socket.io Seerver
+        connection.socketURL = 'https://rtcmulticonnection.herokuapp.com:443/'; // Free Socket.io Seerver connection
         connection.session = {
             audio: true,
             video: true
@@ -47,12 +49,11 @@
             */
         };
 
-        var roomName = document.getElementById('text-roomId');
-        //roomName.value = connection.token();
+        var roomName = document.getElementById('text-roomId'); // 입력창으로 부터 받아오는 방이름 
         
         document.getElementById('openOrJoin').onclick = function() {
             this.disabled = true;
-            connection.openOrJoin( roomName.value ); // 입력값 가져올땐 실제값인 .value로 가져옴
+            connection.openOrJoin( roomName.value ); // .value == 실제값
         };
 
         document.getElementById('open').onclick = function() {
