@@ -93,7 +93,8 @@ module.exports = function(io){
             if(err){
               console.log('quey error'+err);
             }else{      
-              console.log('채팅방 상태값 : ' + req.query.room + '번 방은 ' + roomStatus);;       
+              console.log('채팅방 상태값 : ' + req.query.room + '번 방은 ' + roomStatus);
+              exitRoom(req.query.room);      
               connection.release();
               res.redirect('/chat/list');
             }
@@ -233,12 +234,13 @@ function exitRoom(roomName){
     if(err){
         console.log('connection pool error'+err);
     }else{
-      var query = 'delete from chat_list where roomName=?'; 
+      // 채팅목록과 채팅내용 테이블 2개 roomName으로 join해서 삭제.
+      var query = 'delete chat_list, chat_content from chat_list inner join chat_content on chat_list.roomName = chat_content.roomName where chat_list.roomName = ?'
       connection.query(query, [roomName], function(err, rows, fields){
           if(err){
             console.log('quey error'+err);
           }else{                        
-            console.log('채팅방 기록 삭제'+ JSON.stringify(rows));
+            console.log('채팅방 기록 삭제'+ JSON.stringify(roomName));
           }
           connection.release();
       });   
