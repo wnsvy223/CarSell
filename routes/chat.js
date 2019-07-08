@@ -106,56 +106,22 @@ module.exports = function(io){
 
 
   io.on('connection',function(socket){
-    var room = roomname;  // 라우터로부터 받아온 방이름(게시물 번호)
+    var room = roomname;  // 라우터로부터 받아온 방이름
     socket.join(room); // 방 참가
     //var cookies = socket.handshake.headers.cookie;; // 접속유저의 소켓 세션 아이디
     console.log('- 클라이언트가 접속되었습니다.\n  socket.id: %s', socket.id);
     //console.log(' 소켓 SID : ' + cookies);
     console.log('방이름(소켓) : ' + room);
-    // 소켓 연결되면 연결 요청한 사용자의 socket id를 DB에 저장
-    mysqlDB.getConnection(function(err, connection){
-      if(err){
-          console.log('connection pool error'+err);
-      }else{
-        var query = 'update users set users.socketId=? where users.email=?';    
-        connection.query(query, [socket.id, sessionEmail], function(err, rows, fields){
-            if(err){
-              console.log('quey error'+err);
-            }else{      
-              console.log('소켓아이디 DB 입력' + socket.id +' / ' +sessionEmail);;       
-              connection.release();
-            }
-        });   
-      }
-    }); 
+    saveSocketId(socket.id, sessionEmail); // 소켓 연결되면 연결 요청한 사용자의 socket id를 DB에 저장
 
-    mysqlDB.getConnection(function(err, connection){
-      if(err){
-          console.log('connection pool error'+err);
-      }else{
-        var query = 'select userId_w from board where board.userId_w = ?'; 
-        connection.query(query, [roomname], function(err, rows, fields){
-            if(err){
-              console.log('quey error'+err);
-            }else{             
-              console.log('아이디 : ' + JSON.stringify(rows[0].userId_w));  
-              saveChatList(rows[0].userId_w);
-            }
-            connection.release();
-        });   
-      }
-    }); 
-
-    
     // 클라이언트 접속이 종료될 경우 실행할 이벤트핸들러 등록
     socket.on('disconnect', function() {
       socket.leave(room); // 방 나감
-      //exitRoom(room); // DB 대화 기록 삭제
       console.log('- 클라이언트 접속이 종료되었습니다.\n  socket.id: %s', socket.id);
     });
 
     // 클라이언트의 'chat message' 이벤트 수신시 실행할 이벤트핸들러 등록 
-    socket.on('chat message', function(data) {
+    socket.on('chat message', function(data) { 
       console.log('- 메시지: %s > %s', socket.id, data);
       var now = moment().format('YYYY-MM-DD HH:mm:ss:SSS');
       socket.emit('chat sended', data);; // 내 메시지     
@@ -175,7 +141,8 @@ module.exports = function(io){
                   userId : userId
                 }     
                 socket.broadcast.to(room).emit('chat message', data, params); // 나를 제외한 룸 내의 모든 클라이언트에게 메시지              
-                saveMessage(params.userId, data, room, now);
+                saveMessage(params.userId, data, room, now); // 채팅내용 DB저장
+                getUserId(room); // 대화상대 아이디 조회
                 connection.release();
               }
           });   
@@ -188,6 +155,25 @@ module.exports = function(io){
   });
 
   return router;
+}
+
+// 사용자의 socket id를 DB에 저장
+function saveSocketId(socketId, sessionEmail){
+  mysqlDB.getConnection(function(err, connection){
+    if(err){
+        console.log('connection pool error'+err);
+    }else{
+      var query = 'update users set users.socketId=? where users.email=?';    
+      connection.query(query, [socketId, sessionEmail], function(err, rows, fields){
+          if(err){
+            console.log('quey error'+err);
+          }else{      
+            console.log('소켓아이디 DB 입력' + socket.id +' / ' +sessionEmail);;       
+            connection.release();
+          }
+      });   
+    }
+  }); 
 }
 
 // 소켓 연결시 해당 번호로 채팅방이 존재하지 않을 경우만 테이블에 추가
@@ -228,6 +214,27 @@ function saveMessage(userId, message, roomName, timeStamp_chat){
   });       
 }
 
+//대화 상대 아이디 조회
+function getUserId(roomname){
+  mysqlDB.getConnection(function(err, connection){
+    if(err){
+        console.log('connection pool error'+err);
+    }else{
+      var query = 'select userId_w from board where board.userId_w = ?'; 
+      connection.query(query, [roomname], function(err, rows, fields){
+          if(err){
+            console.log('quey error'+err);
+          }else{             
+            console.log('아이디 : ' + JSON.stringify(rows[0].userId_w));  
+            saveChatList(rows[0].userId_w);
+          }
+          connection.release();
+      });   
+    }
+  }); 
+}
+
+
 // 대화방에 상대가 나갔을 경우 대화 기록이 필요 없으므로 DB에서 삭제하기 위한 함수
 function exitRoom(roomName){  
   mysqlDB.getConnection(function(err, connection){
@@ -235,7 +242,8 @@ function exitRoom(roomName){
         console.log('connection pool error'+err);
     }else{
       // 채팅목록과 채팅내용 테이블 2개 roomName으로 join해서 삭제.
-      var query = 'delete chat_list, chat_content from chat_list inner join chat_content on chat_list.roomName = chat_content.roomName where chat_list.roomName = ?'
+      //var query = 'delete chat_list, chat_content from chat_list inner join chat_content on chat_list.roomName = chat_content.roomName where chat_list.roomName = ?'
+      var query = 'delete from chat_content where chat_content.roomName = ?';
       connection.query(query, [roomName], function(err, rows, fields){
           if(err){
             console.log('quey error'+err);
