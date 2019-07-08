@@ -56,7 +56,7 @@ module.exports = function(io){
         }else{
           var query ='select chat_list.*,(select users.userProfile from users where users.userId = chat_list.visit) visitProfile,(select users.userProfile from users where users.userId = chat_list.owner) ownerProfile,(select chat_content.message from chat_content where chat_content.roomName=chat_list.roomName and timeStamp_chat = (select MAX(timeStamp_chat) from chat_content where chat_content.roomName=chat_list.roomName)) lastMessage from chat_list left outer join users on users.userId = chat_list.owner where owner=? or visit=? order by chat_list.timeStamp_chat desc'
           // 로그인한 유저가 참여한 대화목록만 조회( left outer join으로 프로필사진과 해당 채팅방의 마지막 메시지값 조인)        
-          connection.query(query,[req.session.userId, req.session.userId], function(err, rows, fields){
+          connection.query(query, [req.session.userId, req.session.userId], function(err, rows, fields){
               if(err){
                 console.log('quey error'+err);
               }else{      
@@ -65,8 +65,7 @@ module.exports = function(io){
                   profileImage : req.session.userProfile, 
                   userId : req.session.userId,
                   rows : rows,
-                  moment : moment
-
+                  moment : moment,
                 };                
                 res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
                 res.render('chat-list', params);
@@ -94,7 +93,7 @@ module.exports = function(io){
               console.log('quey error'+err);
             }else{      
               console.log('채팅방 상태값 : ' + req.query.room + '번 방은 ' + roomStatus);
-              exitRoom(req.query.room);      
+              exitRoom(req.query.room, req.session.userId);      
               connection.release();
               res.redirect('/chat/list');
             }
@@ -168,32 +167,12 @@ function saveSocketId(socketId, sessionEmail){
           if(err){
             console.log('quey error'+err);
           }else{      
-            console.log('소켓아이디 DB 입력' + socket.id +' / ' +sessionEmail);;       
+            console.log('소켓아이디 DB 입력' + socketId +' / ' +sessionEmail);;       
             connection.release();
           }
       });   
     }
   }); 
-}
-
-// 소켓 연결시 해당 번호로 채팅방이 존재하지 않을 경우만 테이블에 추가
-function saveChatList(userId_w){
-  mysqlDB.getConnection(function(err, connection){
-    if(err){
-        console.log('connection pool error'+err);
-    }else{
-      var now = moment().format('YYYY-MM-DD HH:mm:ss:SSS');
-      var roomStatus = 'exist';
-      var query = 'insert into chat_list (owner, visit, roomName, timeStamp_chat, roomStatus) select ?,?,?,?,? from dual where not exists (select roomName from chat_list where roomName=?)'; 
-      connection.query(query, [sessionUserId, userId_w, roomname, now, roomStatus, userId_w], function(err, rows, fields){
-          if(err){
-            console.log('quey error'+err);
-          }else{      
-            connection.release();
-          }
-      });   
-    }
-  });  
 }
 
 // 채팅방 대화내용 DB 저장
@@ -211,7 +190,23 @@ function saveMessage(userId, message, roomName, timeStamp_chat){
           }
       });   
     }
-  });       
+  });     
+
+   // 소켓 연결시 채팅방 참가 유저 테이블 데이터 생성 ( 해당 방번호, 유저아이디를 AND연산으로 중복방지하여 생성)
+   mysqlDB.getConnection(function(err, connection){
+    if(err){
+        console.log('connection pool error'+err);
+    }else{
+      var query = 'insert into chat_join_user (userId, roomName) select ?,? from dual where not exists (select userId from chat_join_user where userId=? AND  roomName=?)';
+      connection.query(query, [userId, roomName, userId, roomName], function(err, rows, fields){
+          if(err){
+            console.log('quey error'+err);
+          }else{       
+            connection.release();
+          }
+      });   
+    }
+  });  
 }
 
 //대화 상대 아이디 조회
@@ -234,9 +229,28 @@ function getUserId(roomname){
   }); 
 }
 
+function saveChatList(userId_w){
+  // 소켓 연결시 채팅방 테이블 데이터 생성( 해당 번호로 채팅방이 존재하지 않을 경우만 테이블에 추가 )
+  mysqlDB.getConnection(function(err, connection){
+    if(err){
+        console.log('connection pool error'+err);
+    }else{
+      var now = moment().format('YYYY-MM-DD HH:mm:ss:SSS');
+      var roomStatus = 'exist';
+      var query = 'insert into chat_list (owner, visit, roomName, timeStamp_chat, roomStatus) select ?,?,?,?,? from dual where not exists (select roomName from chat_list where roomName=?)'; 
+      connection.query(query, [sessionUserId, userId_w, roomname, now, roomStatus, userId_w], function(err, rows, fields){
+          if(err){
+            console.log('quey error'+err);
+          }else{      
+            connection.release();
+          }
+      });   
+    }
+  });  
+}
 
 // 대화방에 상대가 나갔을 경우 대화 기록이 필요 없으므로 DB에서 삭제하기 위한 함수
-function exitRoom(roomName){  
+function exitRoom(roomName, userId){  
   mysqlDB.getConnection(function(err, connection){
     if(err){
         console.log('connection pool error'+err);
@@ -249,6 +263,22 @@ function exitRoom(roomName){
             console.log('quey error'+err);
           }else{                        
             console.log('채팅방 기록 삭제'+ JSON.stringify(roomName));
+          }
+          connection.release();
+      });   
+    }
+  }); 
+
+  mysqlDB.getConnection(function(err, connection){
+    if(err){
+        console.log('connection pool error'+err);
+    }else{
+      var query = 'delete from chat_join_user where chat_join_user.roomName = ? AND chat_join_user.userId=?';
+      connection.query(query, [roomName, userId], function(err, rows, fields){
+          if(err){
+            console.log('quey error'+err);
+          }else{                        
+            console.log('채팅방 참가자 기록 삭제'+ JSON.stringify(userId));
           }
           connection.release();
       });   
