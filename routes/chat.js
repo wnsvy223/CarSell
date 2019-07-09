@@ -60,16 +60,25 @@ module.exports = function(io){
               if(err){
                 console.log('quey error'+err);
               }else{      
-                var params = {
-                  email : req.session.email, 
-                  profileImage : req.session.userProfile, 
-                  userId : req.session.userId,
-                  rows : rows,
-                  moment : moment,
-                };                
-                res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
-                res.render('chat-list', params);
-                connection.release();
+                var subQuery = 'select * from chat_join_user where userId = ?';
+                connection.query(subQuery, [req.session.userId], function(err, subRows, fields){
+                    if(err){
+                      console.log('quey error'+err);
+                    }else{
+                      var params = {
+                        email : req.session.email, 
+                        profileImage : req.session.userProfile, 
+                        userId : req.session.userId,
+                        rows : rows,
+                        moment : moment,
+                        subRows : subRows
+                      };                
+                      res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
+                      res.render('chat-list', params);
+                      connection.release();                
+                    }
+                });
+
               }
           });   
         }
@@ -221,7 +230,7 @@ function getUserId(roomname){
             console.log('quey error'+err);
           }else{             
             console.log('아이디 : ' + JSON.stringify(rows[0].userId_w));  
-            saveChatList(rows[0].userId_w);
+            setChatList(rows[0].userId_w);
           }
           connection.release();
       });   
@@ -229,7 +238,7 @@ function getUserId(roomname){
   }); 
 }
 
-function saveChatList(userId_w){
+function setChatList(userId_w){
   // 소켓 연결시 채팅방 테이블 데이터 생성( 해당 번호로 채팅방이 존재하지 않을 경우만 테이블에 추가 )
   mysqlDB.getConnection(function(err, connection){
     if(err){
@@ -246,7 +255,39 @@ function saveChatList(userId_w){
           }
       });   
     }
+  }); 
+  
+  // 대화 상대도 채팅참가자 목록 테이블에 insert
+  mysqlDB.getConnection(function(err, connection){
+    if(err){
+        console.log('connection pool error'+err);
+    }else{
+      var query = 'insert into chat_join_user (userId, roomName) select ?,? from dual where not exists (select userId from chat_join_user where userId=? AND  roomName=?)';
+      connection.query(query, [userId_w, roomname, userId_w, roomname], function(err, rows, fields){
+          if(err){
+            console.log('quey error'+err);
+          }else{       
+            connection.release();
+          }
+      });   
+    }
   });  
+  
+  // 대화 재개 시 채팅방 상태값 exist로 변경
+  mysqlDB.getConnection(function(err, connection){
+    if(err){
+        console.log('connection pool error'+err);
+    }else{
+      var query = 'update chat_list set chat_list.roomStatus=? where chat_list.roomName=?';
+      connection.query(query, ['exist', roomname], function(err, rows, fields){
+          if(err){
+            console.log('quey error'+err);
+          }else{       
+            connection.release();
+          }
+      });   
+    }
+  });
 }
 
 // 대화방에 상대가 나갔을 경우 대화 기록이 필요 없으므로 DB에서 삭제하기 위한 함수
