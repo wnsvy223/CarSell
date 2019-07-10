@@ -75,6 +75,7 @@ module.exports = function(io){
                       };                
                       res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
                       res.render('chat-list', params);
+                      console.log('서브쿼리 : ' + JSON.stringify(subRows));
                       connection.release();                
                     }
                 });

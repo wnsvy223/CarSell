@@ -87,49 +87,51 @@
     </div>
     <!-- ======================== NavBar ========================== -->
 
-  <div class="row margin-top">
-    <h2 class="text-center">내 대화목록</h2>
-    <div class="container">
-        <div id="chat_list" class="messaging">            
-         
-            <% for(var i= 0; i<rows.length; i++){ %>      
-              <% if(rows[i].roomStatus === 'empty' && subRows.length === 0){ %> 
-                                    
-              <% } else { %>
-                <div>           
-                    <button type="button" class="close" aria-label="Close" onclick="location.href='/chat/exit?room=<%=rows[i].roomName %>'"><span aria-hidden="true">&times;</span></button>
-                </div>   
-                <div  class="chat_list" onclick="location.href ='/chat?room=<%=rows[i].roomName %>'">
-                  <div class="chat_people"> 
-                      <% if(rows[i].visit === userId){ %> 
-                        <div class="chat_img col-md-1"> <img class="img-circle" width="40" height="40" src=<%=rows[i].ownerProfile %>> </div>
-                        <div class="chat_ib col-md-10">
-                        <h5><%=rows[i].owner %></h5>
-                      <% } else { %>
-                        <div class="chat_img col-md-1"> <img class="img-circle" width="40" height="40" src=<%=rows[i].visitProfile %>> </div>
-                        <div class="chat_ib col-md-10">
-                        <h5><%=rows[i].visit %></h5>
-                      <% } %> 
-                      <% var status = rows[i].roomStatus %> 
-                      <% if(status === 'empty'){ %> 
-                        <p class="text_overflow">대화 상대가 채팅방을 나갔습니다.</p>
-                      <% } else { %>
-                        <p class="text_overflow"><%=rows[i].lastMessage %></p>  
-                      <% } %>           
+    <div class="row margin-top">
+      <h2 class="text-center">내 대화목록</h2>
+      <div class="container">
+          <div id="chat_list" class="messaging">              
+              <% if(subRows.length <= 0){ %> 
+                  <p class="text_overflow text-center">대화 내용이 없습니다.</p>     
+              <% } else { %>    
+                <% for(var idx= 0; idx<subRows.length; idx++){ %>                                    
+                  <% for(var i= 0; i<rows.length; i++){ %>               
+                    <% if(subRows[idx].roomName === rows[i].roomName){ %>
+                    <div>           
+                        <button type="button" class="close" aria-label="Close" onclick="location.href='/chat/exit?room=<%=rows[i].roomName %>'"><span aria-hidden="true">&times;</span></button>
                     </div>   
-                    <div class="chat_date col-md-1">
-                      <span>
-                          <%=moment(rows[i].timeStamp_chat).format('YYYY-MM-DD HH:mm:ss') %>
-                      </span> 
-                    </div>    
-                  </div>               
-                </div>
-              <% } %>  
-            <% } %>                               
-                    
+                    <div  class="chat_list" onclick="location.href ='/chat?room=<%=rows[i].roomName %>'">
+                      <div class="chat_people"> 
+                          <% if(rows[i].visit === userId){ %> 
+                            <div class="chat_img col-md-1"> <img class="img-circle" width="40" height="40" src=<%=rows[i].ownerProfile %>> </div>
+                            <div class="chat_ib col-md-10">
+                            <h5><%=rows[i].owner %></h5>
+                          <% } else { %>
+                            <div class="chat_img col-md-1"> <img class="img-circle" width="40" height="40" src=<%=rows[i].visitProfile %>> </div>
+                            <div class="chat_ib col-md-10">
+                            <h5><%=rows[i].visit %></h5>
+                          <% } %> 
+                          <% var status = rows[i].roomStatus %> 
+                          <% if(status === 'empty'){ %> 
+                            <p class="text_overflow">대화 상대가 채팅방을 나갔습니다.</p>
+                          <% } else { %>
+                            <p class="text_overflow"><%=rows[i].lastMessage %></p>  
+                          <% } %>           
+                        </div>   
+                        <div class="chat_date col-md-1">
+                          <span>
+                              <%=moment(rows[i].timeStamp_chat).format('YYYY-MM-DD HH:mm:ss') %>
+                          </span> 
+                        </div>    
+                    </div>               
+                  </div> 
+                  <% } %>                                          
+                <% } %>          
+              <% } %>                                          
+            <% } %>           
+          </div>
+        </div>
     </div>
-  </div>
-</div>
 
     <!-- FOOTER -->
     <footer>
