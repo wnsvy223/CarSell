@@ -226,26 +226,6 @@ function saveMessage(userId, message, roomName, timeStamp_chat){
   });  
 }
 
-//대화 상대 아이디 조회
-function getUserId(roomname){
-  mysqlDB.getConnection(function(err, connection){
-    if(err){
-        console.log('connection pool error'+err);
-    }else{
-      var query = 'select userId_w from board where board.userId_w = ?'; 
-      connection.query(query, [roomname], function(err, rows, fields){
-          if(err){
-            console.log('대화 상대 아이디 조회 에러'+err);
-          }else{             
-            console.log('아이디 : ' + JSON.stringify(rows));  
-            setChatList(rows[0].userId_w);
-          }
-          connection.release();
-      });   
-    }
-  }); 
-}
-
 function setChatList(userId_w, roomName){
   // 소켓 연결시 채팅방 테이블 데이터 생성( 해당 번호로 채팅방이 존재하지 않을 경우만 테이블에 추가 )
   mysqlDB.getConnection(function(err, connection){
