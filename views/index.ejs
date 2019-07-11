@@ -1,34 +1,64 @@
+
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-	<link rel='stylesheet' href='/stylesheets/style.css' />
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title> Index Page </title>
-
-	<!-- 부트스트랩 -->
+	<title>로그인</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+<!--===============================================================================================-->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-
+<!--===============================================================================================-->	
+	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts/iconic/css/material-design-iconic-font.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+<!--===============================================================================================-->	
+	<link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/animsition/css/animsition.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+<!--===============================================================================================-->	
+	<link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="css/util.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+<!--===============================================================================================-->
 </head>
-
 <body>
-	<nav class="navbar navbar-inverse navbar-fixed-top">
-		<div class="container">
-			<div class="navbar-header">
-				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-					<span class="sr-only">Toggle navigation</span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</button>
-				<a class="navbar-brand" href="#">프로젝트</a>
-			</div>
+	
+	<div class="limiter">
+		<div class="container-login100">
 
-			<div id="navbar" class="navbar-collapse collapse">
-				<form action="/login" method="POST" role="form" enctype="application/x-www-form-urlencoded" class="navbar-form navbar-right">
-					<% if(locals.invalidPassword){ %>
+			<div class="wrap-login100 p-t-85 p-b-20">
+				<form class="login100-form validate-form" action="/login" method="POST" role="form" enctype="application/x-www-form-urlencoded">
+                  					
+                    <span class="login100-form-title p-b-70">
+						Welcome
+					</span>
+					<span class="login100-form-avatar">
+						<img src="images/man.png" alt="AVATAR">
+					</span>
+                  
+					<div class="wrap-input100 validate-input m-t-85 m-b-35" data-validate = "Enter username">
+						<input class="input100" type="text" name="email">
+						<span class="focus-input100" data-placeholder="E-mail"></span>
+					</div>
+
+					<div class="wrap-input100 validate-input m-b-50" data-validate="Enter password">
+						<input class="input100" type="password" name="password">
+						<span class="focus-input100" data-placeholder="Password"></span>
+                    </div>
+                    
+                    <% if(locals.invalidPassword){ %>
 						<div class="alert alert-danger"><%= invalidPassword %></div>
 					<% } else if(locals.unRegisterUser) { %>
 						<div class="alert alert-danger"><%= unRegisterUser %></div>
@@ -36,117 +66,95 @@
 						<div class="alert alert-danger"><%= noInput %></div>
 					<% } %>
 					<!-- index.js 에서 넘어오는 파라미터값(js에서 로직수행을 한 결과메시지 값)을 받아 비번틀림 및 미가입유저 경고창 호출-->
-					<div class="form-group">
-						<input type="text" placeholder="Email"  name="email" class="form-control"> 
-					</div>
-					<div class="form-group">
-						<input type="password" placeholder="Password" name="password" class="form-control">
-					</div>
-					<button type="submit" class="btn btn-success">로그인</button>
-					<!--email, password 이름으로 지정된 뷰로부터 값을 users.js파일의 login로직을 post요청으로 보냄 -->
-				</form>
-				<div class="navbar-text navbar-right">
-					<a data-toggle="modal" data-target="#ModalLoginForm"> <!--가입용 모달창 호출-->
-						회원가입
-					</a>
-				</div>
-				
-			</div>
-			<!--/.navbar-collapse -->
-		</div>
-	</nav>
-	<div class="container">
-	<!-- Main jumbotron for a primary marketing message or call to action -->
-		<div class="jumbotron margin-top">
-			<h1>Hello, world!</h1>
-			<p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
-			<p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p>
-		</div>
-	</div>
-	</div>
 
-	<!-- 모달 다이얼로그 -->
+					<div class="container-login100-form-btn">
+						<button type="submit" class="login100-form-btn">
+							로그인
+						</button>
+                    </div>
+                </form>
+              
+                <div class="container-login100-form-btn">                    
+                    <!--가입용 모달창 호출-->
+                    <button type="submit" class="login100-form-btn"  data-toggle="modal" data-target="#ModalLoginForm">
+                        회원 가입
+                    </button>
+                </div>
+
+            </div>          
+		</div>
+	</div>
+    
+    <!-- 모달 다이얼로그 -->
 	<div id="ModalLoginForm" class="modal fade">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-body">
-					<h1>SignUp</h1>
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <h1 class="text-center">회원 가입</h1>
+    
+                        <form role="form" method="POST" action="/register" enctype="multipart/form-data" >
+                            <div class="form-group">
+                                <label class="control-label">ID</label>
+                                <div>
+                                    <input type="text" class="form-control input100" name="userId" value="">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">E-Mail Address</label>
+                                <div>
+                                    <input type="email" class="form-control input100" name="email" value="">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Password</label>
+                                <div>
+                                    <input type="password" class="form-control input100" name="password">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Profile Image</label>
+                                <div>
+                                    <div class="file_input_div">
+                                        <input type="text" id="fileName" placeholder="Click and Select Image File" class="file_input_textbox form-control" readonly >
+                                        <input type="file" name="file" class="file_input_hidden" onchange="javascript: document.getElementById('fileName').value = this.value"/>
+                                    </div>													
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div>
+                                    <button type="submit" class="btn btn-success">확인</button>	
+                                </div>
+                            </div>
+                        </form>						
+    
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
 
-					<form role="form" method="POST" action="/register" enctype="multipart/form-data" >
-						<div class="form-group">
-							<label class="control-label">ID(NickName)</label>
-							<div>
-								<input type="text" class="form-control input-lg" name="userId" value="">
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="control-label">E-Mail Address</label>
-							<div>
-								<input type="email" class="form-control input-lg" name="email" value="">
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="control-label">Password</label>
-							<div>
-								<input type="password" class="form-control input-lg" name="password">
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="control-label">Profile Image</label>
-							<div>
-								<div class="file_input_div">
-									<input type="text" id="fileName" placeholder="Click and Select Image File" class="file_input_textbox form-control input-lg" readonly >
-									<input type="file" name="file" class="file_input_hidden" onchange="javascript: document.getElementById('fileName').value = this.value"/>
-								</div>													
-							</div>
-						</div>
-						<div class="form-group">
-							<div>
-								<button type="submit" class="btn btn-success">가입완료</button>	
-							</div>
-						</div>
-					</form>						
 
-				</div>
-			</div><!-- /.modal-content -->
-		</div><!-- /.modal-dialog -->
-	</div><!-- /.modal -->
-
-	<div class="container">
-		<!-- 하단부 이미지, 텍스트, 버튼 뷰-->
-		<div class="row">
-			<div class="col-md-4">
-				<img class="img-circle" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Generic placeholder image" width="140" height="140">
-				<h2>Heading</h2>
-				<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-				<p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-			</div>
-			<div class="col-md-4">
-				<img class="img-circle" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Generic placeholder image" width="140" height="140">
-				<h2>Heading</h2>
-				<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-				<p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-			</div>
-			<div class="col-md-4">
-				<img class="img-circle" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Generic placeholder image" width="140" height="140">
-				<h2>Heading</h2>
-				<p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-				<p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-			</div>
-		</div>
-		<hr>
-		<footer>
-			<p>&copy; Company June</p>
-		</footer>
-
-	</div>
-	<!-- /container -->
+	<div id="dropDownSelect1"></div>
+	
+<!--===============================================================================================-->
+	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/animsition/js/animsition.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/bootstrap/js/popper.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/select2/select2.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/daterangepicker/moment.min.js"></script>
+	<script src="vendor/daterangepicker/daterangepicker.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/countdowntime/countdowntime.js"></script>
+<!--===============================================================================================-->
+    <script src="js/main.js"></script>
+<!--===============================================================================================-->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-	<!-- 모든 컴파일된 플러그인을 포함합니다 (아래), 원하지 않는다면 필요한 각각의 파일을 포함하세요 -->
+<!--===============================================================================================-->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 
-	
-	
 </body>
-
 </html>

@@ -4,6 +4,7 @@
 <head>
     <script src="https://rtcmulticonnection.herokuapp.com/dist/RTCMultiConnection.min.js"></script>
     <script src="https://rtcmulticonnection.herokuapp.com/socket.io/socket.io.js"></script>
+    <script src="https://webrtchacks.github.io/adapter/adapter-latest.js"></script>
 </head>
 
 <body>
@@ -20,9 +21,15 @@
     <script>
         var connection = new RTCMultiConnection();
         connection.socketURL = 'https://rtcmulticonnection.herokuapp.com:443/'; // Free Socket.io Seerver connection
+        
         connection.session = {
             audio: true,
             video: true
+        };
+
+        connection.mediaConstraints = {
+            video: true,
+            audio: true
         };
 
         connection.optionalArgument = {};
@@ -58,7 +65,7 @@
 
         document.getElementById('open').onclick = function() {
             this.disabled = true;
-            connection.open( roomName.value );
+            connection.open( roomName.value );             
         };
 
         
