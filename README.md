@@ -10,4 +10,4 @@ FRONT-END : html, ejs, bootstrap
 
 <img src="https://user-images.githubusercontent.com/28755528/64004734-c8988280-cb49-11e9-9751-7f02cf706db1.png" width="90%"></img>
 
-<img src="https://user-images.githubusercontent.com/28755528/64004948-4d839c00-cb4a-11e9-8e9a-11cd0b4238bf.png" width="90%"></img>
+<img src="https://user-images.githubusercontent.com/28755528/64005034-773cc300-cb4a-11e9-822b-f107efa78a3f.png" width="90%"></img>
