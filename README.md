@@ -1,6 +1,6 @@
 웹페이지 개인 프로젝트
-BACK-END : Node.js(Express), Mysql
-FRONT-END : html, ejs, bootstrap
+<br>BACK-END : Node.js(Express), Mysql</br>
+<br>FRONT-END : html, ejs, bootstrap</br>
 
 <img src="https://user-images.githubusercontent.com/28755528/64004601-88390480-cb49-11e9-949c-d7898bea5c01.png" width="90%"></img>
 
